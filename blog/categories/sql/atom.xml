@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: SQL | Sumnous's Blog]]></title>
+  <link href="http://sumnous.github.io/blog/categories/sql/atom.xml" rel="self"/>
+  <link href="http://sumnous.github.io/"/>
+  <updated>2015-07-07T17:23:01+08:00</updated>
+  <id>http://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[DBLP数据集SQL导入]]></title>
+    <link href="http://sumnous.github.io/blog/2013/12/02/dblp-sql/"/>
+    <updated>2013-12-02T16:10:28+08:00</updated>
+    <id>http://sumnous.github.io/blog/2013/12/02/dblp-sql</id>
+    <content type="html"><![CDATA[<h3 id="dblp">1. 创建数据库DBLP：</h3>
+
+<p><code>show databases; </code></p>
+
+<p><code>create database dblp;</code></p>
+
+<p><code>use dblp;</code></p>
+
+<p>导入数据库：</p>
+
+<p><code>mysql -u root -p dblp &lt;  /Users/ting/workspace/datasets/dblp.sql </code></p>
+
+<p><strong>CODE: <a href="https://github.com/sumnous/DBLP-parser">DBLP-parser</a></strong></p>
+
+<p>三个表：</p>
+
+<p>authors: pid, author</p>
+
+<p>papers: pid, title, year, conference, abstract</p>
+
+<p>cites: pid,cid</p>
+
+<p><code>show tables;</code></p>
+
+<!--more-->
+
+<p>test：</p>
+
+<p><code>select count(*) from papers;</code>     看导入论文总个数</p>
+
+<p><code>select * from authors limit 10;</code>  </p>
+
+<p><code>select * from cites limit 10;</code></p>
+
+<p><code>select * from papers limit 10;</code></p>
+
+<p><code>select pid, title, year from papers limit 10; </code></p>
+
+<p><code>select * from authors limit 100000,10;</code> 从100000开始10个作者  </p>
+
+<p>看表的结构：</p>
+
+<p><code>desc papers;</code></p>
+
+<p><code>desc authors;</code></p>
+
+<p><code>desc cites;</code></p>
+
+<p>查看表是否有索引：</p>
+
+<p><code>show index from authors;</code></p>
+
+<p>创建表中列的索引：</p>
+
+<p><code>create index pid_index on authors(pid);</code></p>
+
+<p><code>create index pid_index on cites(pid);</code></p>
+
+<p><code>create index cid_index on cites(cid);</code></p>
+
+<p><code>create index pid_index on papers(pid);</code> </p>
+
+<p>group：</p>
+
+<p><code>select pid, group_concat(author) from authors group by pid limit 100;</code></p>
+
+<p>删除pid中的”index”:</p>
+
+<p>尝试</p>
+
+<p><code>select left(pid, 5) from cites limit 10;</code>     <code>select substr(pid, 1,5) from cites limit 10;</code></p>
+
+<p><code>select substr(pid, 6) from cites limit 10;</code></p>
+
+<p>更新pid:</p>
+
+<p><code>update cites set pid = substr(pid, 6);</code></p>
+
+<p><code>update authors set pid = substr(pid, 6);</code></p>
+
+<p><code>update papers set pid = substr(pid, 6);</code>  </p>
+
+<p>更改pid数据类型：</p>
+
+<p><code>alter table authors modify pid int(32);</code></p>
+
+<p><code>alter table papers modify pid int(32);</code></p>
+
+<p><code>alter table cites modify pid int(32);</code></p>
+
+<p><code>alter table cites modify cid int(32);</code></p>
+
+<p>debug: <code>delete from papers where title = "null";</code>删除title为空得论文 3个</p>
+
+<h3 id="coauthorship">2. 创建coauthorship表：</h3>
+
+<p><code>create table coauthorship select ta.pid, ta.author as author1, tb.author as author2 from authors as ta, authors as tb where ta.pid = tb.pid and ta.author &lt; tb.author; </code></p>
+
+<p><code>create index pid_index on coauthorship(pid);</code></p>
+
+<p><code>select pid, count(*) as count from coauthorship group by pid limit 100;</code></p>
+
+<p><code>create index author1_index on coauthorship(author1);</code></p>
+
+<p><code>create index author2_index on coauthorship(author2);</code></p>
+
+<p>更改author数据类型的长度：</p>
+
+<p><code>select max(length(author1)) from coauthorship;</code></p>
+
+<p><code>select author1, length(author1) from coauthorship order by length(author1) desc limit 100;</code></p>
+
+<p><code>select distinct author1, length(author1) from coauthorship order by length(author1) desc limit 100;</code></p>
+
+<p><code>select max(length(author)) from authors;</code></p>
+
+<p><code>alter table authors modify author varchar(100);</code></p>
+
+<p><code>alter table coauthorship modify author1 varchar(100);</code>   </p>
+
+<h3 id="coauthorweight">3. 创建coauthorweight表，两个作者共同合作多少篇文章：</h3>
+
+<p><code>create table coauthorweight select author1, author2, count(*) as weight from coauthorship group by author1, author2;</code></p>
+
+<p>test:</p>
+
+<p><code>select * from coauthorweight order by weight desc limit 40;</code></p>
+
+<p><code>select * from coauthorweight where author1 = "Guoliang Li" order by weight desc;</code></p>
+
+<p><code>select * from coauthorweight where author1 = "Guoliang Li" or author2 = "Guoliang LI" order by weight desc;</code> </p>
+
+<p><code>select * from authors, papers where author = "Guoliang Li" and authors.pid = papers.pid;</code></p>
+
+<p><code>select authors.author, papers.title, papers.year, papers.conference from authors, papers where author = "Guoliang Li" and authors.pid = papers.pid;</code>  </p>
+
+<h3 id="authorcount">4. 创建author_count表，每个作者发表的文章数：</h3>
+
+<p><code>create table author_count select author, count(*) as number from authors group by authors;</code> </p>
+
+<p>创建author-papercount</p>
+
+<p><code>create index author_index on authors(author);</code> </p>
+
+<p><code>create table author_count select author, count(*) as number from authors group by author;</code> </p>
+
+<p>test：</p>
+
+<p><code>select * from author_count where author = "Guoliang Li";</code></p>
+
+<p><code>select * from author_count order by number desc limit 10;</code></p>
+
+<p>导出txt</p>
+
+<p><code>select * from authors limit 10 into outfile "authors.txt”;</code></p>
+
+<p>找到文件存放位置</p>
+
+<p><code>show variables like "%dir%";</code>  </p>
+
+]]></content>
+  </entry>
+  
+</feed>

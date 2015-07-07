@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Octave | Sumnous's Blog]]></title>
+  <link href="http://sumnous.github.io/blog/categories/octave/atom.xml" rel="self"/>
+  <link href="http://sumnous.github.io/"/>
+  <updated>2015-07-07T17:23:01+08:00</updated>
+  <id>http://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Install Octave on Mac OS X 10.9]]></title>
+    <link href="http://sumnous.github.io/blog/2014/07/13/install_octave/"/>
+    <updated>2014-07-13T10:10:28+08:00</updated>
+    <id>http://sumnous.github.io/blog/2014/07/13/install_octave</id>
+    <content type="html"><![CDATA[<p>Recently I am working on Stanford Machine Learning Course By Andrew NG on Coursera, Andrew recommended Octave to build prototype quickly. It’s been tricky to install octave on Mac, so I shared my process of intalling it. </p>
+
+<p>1.Install <a href="https://xquartz.macosforge.org/landing/">XQuartz</a></p>
+
+<p>2.Install Xcode and Command Line Tools3</p>
+
+<p><code>vim
+$ xcode-select --install
+</code></p>
+
+<p>3.Install <a href="https://github.com/Homebrew/homebrew/wiki/installation">homebrew</a></p>
+
+<p><code>vim
+$ brew doctor
+$ brew update &amp;&amp; brew upgrade
+</code></p>
+
+<p>It’s important to solve all the warning in homebrew, so it can work smoothly when installing octave.</p>
+
+<p>4.Import the scientific computing packages</p>
+
+<p><code>vim
+$ brew tap homebrew/science
+</code></p>
+
+<p>5.Install Octave</p>
+
+<p><code>vim
+$ brew install octave
+</code></p>
+
+<p>6.Install gnuplot</p>
+
+<p><code>vim
+$ brew install gnuplot
+</code></p>
+
+<p>(Update: As phseven pointed out, gnuplot will be automatically installed with octave, but in some cases it won’t support X11.) For such cases, do the following:</p>
+
+<p><code>vim		
+$ brew uninstall gnuplot
+$ brew install gnuplot --with-x
+</code></p>
+
+<p>If you plot something in Octave, and it occures problems like this:</p>
+
+<p><code>vim	
+gnuplot&gt; set terminal aqua enhanced title "Figure 1"  font "*,6" dashlength 1
+	           			^	        	             
+	    line 0: unknown or ambiguous terminal type; type just 'set terminal' for a list
+</code>     </p>
+
+<p>Just run:</p>
+
+<p><code>vim
+setenv("GNUTERM","X11")
+</code></p>
+
+<p>befor you plot anything, e.g.,</p>
+
+<p><code>vim
+plot(x,y)
+</code></p>
+
+<p>It will be convenient if you setup Octave startup file: <code>vim ~/.octaverc</code> and add the line <code>setenv GNUTERM x11</code>.</p>
+
+<p>7.Open Octave just run <code>octave</code>, if you want to change the look of your Octave, just input <code>PS1('&gt;&gt; ')</code></p>
+
+<p><code>vim
+octave:1&gt;
+octave:1&gt; PS1('&gt;&gt; ')
+&gt;&gt;
+&gt;&gt;
+</code>
+<!--more-->	</p>
+
+<p><em>Reference: <a href="http://jatinganhotra.com/blog/2014/01/21/installing-octave-on-os-x-10-dot-9-mavericks/">http://jatinganhotra.com/blog/2014/01/21/installing-octave-on-os-x-10-dot-9-mavericks/</a></em></p>
+
+]]></content>
+  </entry>
+  
+</feed>

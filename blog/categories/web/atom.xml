@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Web | Sumnous's Blog]]></title>
+  <link href="http://sumnous.github.io/blog/categories/web/atom.xml" rel="self"/>
+  <link href="http://sumnous.github.io/"/>
+  <updated>2015-07-07T17:23:01+08:00</updated>
+  <id>http://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress build blog on Github 个人建站实录]]></title>
+    <link href="http://sumnous.github.io/blog/2014/05/11/octopress-build-blog-on-github/"/>
+    <updated>2014-05-11T16:10:28+08:00</updated>
+    <id>http://sumnous.github.io/blog/2014/05/11/octopress-build-blog-on-github</id>
+    <content type="html"><![CDATA[<p>为什么选择Octopress：静态+Markdown+Git提交+不需要服务器+有基础的话折腾1-2个小时就能看到效果（这些都是我喜欢的）</p>
+
+<p>这篇<a href="http://jackycode.github.io/blog/2014/02/23/record/">《记录：Octopress建站之旅》</a>很易上手，有篇易懂易follow的教程是好的开始~(多亏池大 <a href="http://weibo.com/idreamland">@池建强</a> 分享了 <a href="http://weibo.com/jackycode">@Jacky130</a> 的博客，我才看到了这篇文章，才想自己动手来做这件事情)</p>
+
+<h3 id="gitruby">1. 首先安装Git和Ruby，检查是否安装好</h3>
+
+<p><code>		
+git --version
+ruby --version
+</code>	</p>
+
+<h3 id="octopressoctopress">2. 安装Octopress到本地，之后的所有操作都在octopress文件下</h3>
+
+<p><code>
+git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+gem install bundler
+rbenv rehash
+bundle install
+</code></p>
+
+<p>可能会有权限问题，请加sudo。在执行<code>rbenv rehash</code>的时候系统提示我没有此命令，于是参考<a href="http://jianshu.io/p/ACs3kA">这里</a></p>
+
+<p><code>
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+</code></p>
+
+<p>将$PATH写入~/.bash_profile，也可以参考<a href="https://github.com/sstephenson/rbenv#basic-github-checkout">rbenv的git页面</a></p>
+
+<p><code>
+export RBENV_ROOT="${HOME}/.rbenv"
+if [ -d "${RBENV_ROOT}" ]; then
+  export PATH="${RBENV_ROOT}/bin:${PATH}"
+  eval "$(rbenv init -)"
+fi
+</code>
+检查rbenv是否可用<code>rbenv -v</code>。<code>rbenv rehash</code>这条命令，每当切换 ruby 版本和执行 bundle install 之后必须执行这个命令。</p>
+
+<h3 id="section">3. 安装主题</h3>
+
+<!--more-->
+
+<p>安装默认主题：</p>
+
+<p><code>sh
+rake install
+</code></p>
+
+<p>我选的是<a href="https://github.com/gehaxelt/CSS-WhiteLake">WhiteLake</a>，也可以在<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">这里</a>选别的第三方主题。</p>
+
+<p><code>sh
+git clone https://github.com/gehaxelt/CSS-WhiteLake.git .themes/whitelake
+rake install['whitelake']
+rake generate
+</code></p>
+
+<h3 id="github">4. 在github上部署博客</h3>
+
+<p>首先有一个Github账户，创建一个repository，命名为yourGithubName.github.io</p>
+
+<p><code>sh
+rake setup_github_pages #input your repository's url
+rake generate
+rake deploy
+</code></p>
+
+<p>提交source：</p>
+
+<p><code>
+git add .
+git commit -am "this commit's content"
+git push origin source
+</code></p>
+
+<h3 id="octopress">5. 配置Octopress</h3>
+
+<p><code>_config.yml</code>文件是今后要多次涉及到的重要配置文件，基本上安装的插件都会出现在这个文件中，可以通过更改true或者false来启用或者关闭，分为3部分：</p>
+
+<ul>
+  <li>
+    <p>main configs		设置博客的名字等等</p>
+  </li>
+  <li>
+    <p>Jekyll &amp; Plugins		设置侧边栏，每页显示几篇博客，最近的博客显示几篇，read on等等</p>
+  </li>
+  <li>
+    <p>3rd Party Settings		社会化工具，Github repositories，Twitter，Facebook，Disqus Comments，Google Analytics等等		</p>
+  </li>
+</ul>
+
+<h4 id="section-1">增加页面</h4>
+
+<p>比如增加一个About的页面，修改<code>source/_includes/custom/</code>下的<code>navigation.html</code>文件。添加一条语句，并注意要更改About页面的url为<code>yourblogurl/about</code>，增加其他页面也同理，接下来真正的创建页面：</p>
+
+<p><code>sh
+rake new_page[about]
+</code>
+将你想写的内容写在刚生成的<code>source/about/index.markdown</code>中，记得提交配置。</p>
+
+<p><code>sh
+rake generate
+git add .
+git commit -am "config"
+git push origin source
+rake preview #http://localhost:4000
+rake deploy
+</code></p>
+
+<p>至此，基本的配置已经完成了。</p>
+
+<h3 id="section-2">6. 发布新博客</h3>
+
+<p>将文章命名为“YYYY-MM-DD-post-title.markdown”，也可使用</p>
+
+<p><code>sh
+rake new_post["title"]
+</code></p>
+
+<p>帮你生成<code>source/_posts/YYYY-MM-DD-title.markdown</code>文件，写博文，然后提交。</p>
+
+<p><code>sh
+rake generate
+git add .
+git commit -am "message"
+git push origin source
+rake preview #http://localhost:4000
+rake deploy
+</code></p>
+
+<p>关于“删除文章”，我总认为这有个小bug，只要文章的名字是命名规则的格式，即使不commit也会出现在博客上，很厌烦，一般直接删除markdown文件就好，为了避免未写完的文章出现在博客上，请写完博文再改名字，然后再提交。</p>
+
+<p>基本上就这样了，剩下的想美化或者想增加功能啊等个性化设置可以继续探索。</p>
+
+<h3 id="some-tips">7. Some Tips</h3>
+
+<h4 id="section-3">代码高亮</h4>
+
+<p>使用<strong>pygments</strong>插件，可以支持N多种语言，语法超简单(只需在代码引用符号后添加语言的名字，就会自动配色)，可以看下这个兄弟的<a href="http://jinlong.github.io/blog/2013/03/30/octopress-syntax-highlight/">探索吐槽</a></p>
+
+<p>需装python, ruby, rubypython</p>
+
+<p>修改<code>_config.yml</code>中，Jekyll &amp; Plugins的pygments项，从false改为true。</p>
+
+<h4 id="octopresshttpbiaobiaoqimeblog20130710decorate-octopress">这位仁兄的<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">Octopress各种配置</a>写得很详细，可供参考</h4>
+
+<h4 id="section-4">可以继续添加的东东</h4>
+
+<p>各种统计，tags，最新评论，返回顶部按钮，weiboshow，douban展示，原文链接以及版权信息等等</p>
+
+<h4 id="macmarkdownmouhttpmouappcom">推荐Mac上的Markdown写作工具<a href="http://mouapp.com/">MOU</a>，界面很简单清新，可以支持数学公式。</h4>
+
+<blockquote>
+  <p>主要参考链接: </p>
+
+  <ol>
+    <li><a href="http://jackycode.github.io/blog/2014/02/23/record/">http://jackycode.github.io/blog/2014/02/23/record/</a></li>
+    <li><a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress">http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress</a></li>
+    <li><a href="http://cn.soulmachine.me//blog/20130402/">http://cn.soulmachine.me//blog/20130402/</a></li>
+    <li><a href="http://812lcl.com/blog/categories/octopress/">http://812lcl.com/blog/categories/octopress/</a></li>
+  </ol>
+</blockquote>
+
+]]></content>
+  </entry>
+  
+</feed>

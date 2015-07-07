@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Algorithm | Sumnous's Blog]]></title>
+  <link href="http://sumnous.github.io/blog/categories/algorithm/atom.xml" rel="self"/>
+  <link href="http://sumnous.github.io/"/>
+  <updated>2015-07-07T17:23:01+08:00</updated>
+  <id>http://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A review of overlapping commuity detection algorithms]]></title>
+    <link href="http://sumnous.github.io/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms/"/>
+    <updated>2013-09-16T16:10:28+08:00</updated>
+    <id>http://sumnous.github.io/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms</id>
+    <content type="html"><![CDATA[<h2 id="overlapping-community-detection">Overlapping Community Detection</h2>
+
+<blockquote>
+  <p><a href="http://arxiv.org/abs/1110.5813">Overlapping Community Detection in Networks : the State of the Art and Comparative Study</a></p>
+</blockquote>
+
+<blockquote>
+  <p><a href="http://arxiv.org/abs/0908.1062">Community detection algorithms: a comparative analysis</a></p>
+</blockquote>
+
+<h3 id="old-method">0 OLD METHOD</h3>
+
+<ul>
+  <li>
+    <p>Clustering</p>
+  </li>
+  <li>
+    <p>Graph Cut</p>
+  </li>
+  <li>
+    <p>Modularity-Based Method(is NP-hard to optimize) <a href="http://arxiv.org/pdf/physics/0602124.pdf">[Newman, 2006]</a></p>
+
+    <center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/modularity.png" /></center>
+
+    <ul>
+      <li>
+        <p>Greedy</p>
+      </li>
+      <li>
+        <p>Simulated Annealing</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Girvan-Newman Algorithm (Betweenness, split)</p>
+  </li>
+  <li>
+    <p>Spectral Method</p>
+  </li>
+</ul>
+
+<!--more-->
+
+<h3 id="clique-percolation">1 Clique Percolation</h3>
+
+<h4 id="cpm-clique-percolation-method">CPM (Clique Percolation Method)</h4>
+
+<ul>
+  <li>
+    <p>Indentify all the k-cliques in network. <em>Clique</em> is an intensively structure, each two nodes are connected in a clique. Connect two nodes if their two k-cliques they belong to share k-1 members. [<a href="http://www.nature.com/nature/journal/v435/n7043/full/nature03607.html">Palla, 2005, Nature</a>]</p>
+  </li>
+  <li>
+    <p>Implementation: <a href="http://www.cfinder.org/">CFinder</a> (support directed and weighted graph)</p>
+  </li>
+  <li>
+    <p>Time Complexity: <strong>polynomial</strong> (NP-complete maximal cliques finding)</p>
+  </li>
+</ul>
+
+<h3 id="local-expansion-and-optimization">2 Local Expansion and Optimization</h3>
+
+<h4 id="lfm">LFM</h4>
+
+<ul>
+  <li>
+    <p>expands a community from a random seed node to form a natural community until fitness function is locally maximal. [<a href="http://arxiv.org/pdf/0802.1218.pdf">Lancichinetti, 2009, New J. Phys.</a>]</p>
+  </li>
+  <li>
+    <p>fitness function: </p>
+  </li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/fitness_function.png" /></center>
+
+<ul>
+  <li>
+    <p>where n<sub>c</sub> is the number of communities, s is the average size of communities.</p>
+  </li>
+  <li>
+    <p><strong>O(n<sub>c</sub>s<sup>2</sup>)</strong>, computation complexity is depended on parameter \alpha. </p>
+  </li>
+  <li>
+    <p>worst-case complexity: <strong>O(n<sup>2</sup>)</strong></p>
+  </li>
+</ul>
+
+<h4 id="gce-greedy-clique-expansion">GCE (Greedy Clique Expansion)</h4>
+
+<ul>
+  <li>
+    <p>takes all maximum cliques as initial seeds to greedily expand the fitness function to find overlapping communities. <a href="http://arxiv.org/abs/1002.1827">[Lee, 2010]</a></p>
+  </li>
+  <li>
+    <p><a href="https://sites.google.com/site/greedycliqueexpansion.">GCE Implementation</a></p>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>Greedy expansion complexity: **O(</td>
+          <td>E</td>
+          <td>M)** , M is the number of cliques to be expanded.</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>merge complexity: **O(2(</td>
+          <td>C1</td>
+          <td>+</td>
+          <td>C2</td>
+          <td>)-1)** (not sure)</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h4 id="oslom-order-statistics-local-optimization-methodimportant">OSLOM (Order Statistics Local Optimization Method)(IMPORTANT)</h4>
+
+<ul>
+  <li>optimizes locally the statistical significance information of a cluster with respect to random fluctuation with Extreme and Order Statistics. It tests the statistical significance of a cluster with respect to a global null model. It can deal with weighted, directed edges, overlapping communities, hierarchies and dynamic communities. <a href="http://oslom.org/oslom.pdf">[Lancichinetti, 2011]</a></li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/oslom.png" /></center>
+
+<ul>
+  <li>
+    <p>Implementation: <a href="http://www.oslom.org">www.oslom.org</a></p>
+  </li>
+  <li>
+    <p>worst-case complexity: <strong>O(n<sup>2</sup>)</strong></p>
+  </li>
+</ul>
+
+<h4 id="eagle">EAGLE</h4>
+
+<ul>
+  <li>
+    <p>All maximal cliques is as initial communities, merged by maximum similarity -&gt; dendrogram. The optimal cut on the dendrogram is determined by the extended modularity with a weight based on the number of overlapping memberships. <a href="http://arxiv.org/pdf/0810.3093.pdf">[Shen, 2008]</a> <a href="http://code.google.com/p/eaglepp/">[code]</a></p>
+  </li>
+  <li>
+    <p>Extended Modularity: </p>
+  </li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/extended_modularity.png" /></center>
+
+<ul>
+  <li>
+    <p>where O<sub>i</sub> is the number of communities to which node i belongs.</p>
+  </li>
+  <li>
+    <p><strong>O(n<sup>2</sup>+(h+n)s)</strong>, where s is the number of maximal cliques, h is the number of pairs of maximal cliques which are neighbors. </p>
+  </li>
+</ul>
+
+<h3 id="mixturl-model-todo">3 Mixturl Model (TODO)</h3>
+
+<ul>
+  <li><a href="http://www.bradblock.com.s3-website-us-west-1.amazonaws.com/Mixture_models_and_exploratory_analysis_in_networks.pdf">[Newman, 2007]</a></li>
+  <li>GMM(Gaussian Mixture Model)</li>
+  <li>SBM(Stochastic block model)</li>
+  <li>NMF(Non-negativeMatrix Factorization)</li>
+</ul>
+
+<h3 id="label-propagation-algorithm-dynamical-algorithm">4 Label Propagation Algorithm (Dynamical Algorithm)</h3>
+
+<h4 id="copra">COPRA</h4>
+
+<ul>
+  <li>
+    <p><a href="http://arxiv.org/pdf/0910.5516.pdf">[Gregory,2010]</a></p>
+  </li>
+  <li>
+    <p><strong>O(vmlog(vm/n))</strong> per iteration, v controls the number of communities a node can belong to, m is the number of edges, n is the number of nodes. </p>
+  </li>
+</ul>
+
+<h4 id="slpaimportant-todo">SLPA(IMPORTANT TODO)</h4>
+
+<ul>
+  <li>
+    <p>is a general speaker-listener based information propagation process. <a href="http://arxiv.org/pdf/1202.2465.pdf">[Xie, 2011]</a></p>
+  </li>
+  <li>
+    <p><a href="https://sites.google.com/site/communitydetectionslpa/">code</a></p>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>**O(t</td>
+          <td>E</td>
+          <td>)**, linear, t is the predefined maximum number of iterations.</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h4 id="infomapimportant-todo">InfoMAP(IMPORTANT TODO)</h4>
+
+<ul>
+  <li>The map equation framework</li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/map_equation.png" /></center>
+
+<ul>
+  <li>
+    <p><a href="http://www.mapequation.org/publications.html">papers</a></p>
+
+    <ul>
+      <li><a href="http://www.mapequation.org/assets/publications/EurPhysJ2010Rosvall.pdf">The Map Equation [Rosvall, 2009]</a></li>
+    </ul>
+  </li>
+  <li>
+    <p><a href="http://www.tp.umu.se/~rosvall/code.html">codes</a></p>
+  </li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
