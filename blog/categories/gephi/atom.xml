@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Gephi | Sumnous's Blog]]></title>
+  <link href="https://sumnous.github.io/blog/categories/gephi/atom.xml" rel="self"/>
+  <link href="https://sumnous.github.io/"/>
+  <updated>2015-07-07T13:16:12+08:00</updated>
+  <id>https://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Gephi on OS X Mavericks 10.9]]></title>
+    <link href="https://sumnous.github.io/blog/2014/07/24/gephi-on-mac/"/>
+    <updated>2014-07-24T12:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/07/24/gephi-on-mac</id>
+    <content type="html"><![CDATA[<p><em>“Gephi is an open source visualization and exploration platform available on Windows, Linux and Mac OS X. It supports all types of networks – directed, undirected and mixed, and is capable of handling very large network graphs of up to one million nodes. Various metrics are supported including betweenness, closeness, diameter, clustering coefficient, average shortest path, pagerank and HITS. Dynamic filtering allows edges and/or nodes to be selected based on network structure or data. Ideal for social network analysis, link analysis and biological network analysis. Perhaps the most advanced of the open source tools.” <a href="http://butleranalytics.com/5-free-social-network-analysis-tools/">&lt;5 Free Social Network Analysis Tools - Butler Analytics&gt;</a></em></p>
+
+<p>Running OS X Mavericks 10.9.4. I downloaded <a href="http://gephi.github.io/users/download/">Gephi 0.8.2-beta</a> and it would not load correctly. After starting, it would freeze if I clicked anything. After looking for the solutions on the internet, I found this is a show-stopper for every normal Mac user caused by not supporting JAVA 7(which is installed on updating Mac 10.9) on Gephi. So we need to swich back to JAVA 6, it’s really annoying…</p>
+
+<p>Took me almost a day to solve this problem… :( </p>
+
+<p>This is the steps what I did to fix the problem for running Gephi on Mac OS X 10.9 <a href="https://github.com/joernhees">@joernhees</a>:</p>
+
+<ol>
+  <li>
+    <p>Download and install JAVA 1.6: <a href="http://support.apple.com/kb/DL1572">http://support.apple.com/kb/DL1572</a></p>
+  </li>
+  <li>
+    <p>Delete your gephi settings dir: <code>rm -r ~/Library/Application\ Support/gephi</code></p>
+  </li>
+  <li>
+    <p>Find your java home with <code>/usr/libexec/java_home -v 1.6</code>, it should print something like <code>/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home</code></p>
+  </li>
+  <li>
+    <p>Edit <code>/Applications/Gephi.app/Contents/Resources/gephi/etc/gephi.conf</code> to set your jdkhome e.g. like this: <code>echo "jdkhome=\"$(/usr/libexec/java_home -v 1.6)\"" &gt;&gt; /Applications/Gephi.app/Contents/Resources/gephi/etc/gephi.conf</code></p>
+  </li>
+  <li>
+    <p>Start Gephi and open the Les Miserables sample, if you see the graph good.</p>
+  </li>
+  <li>
+    <p>Check Gephi’s about for the line saying Java: 1.6.0_65; Java HotSpot(TM) 64-Bit Server VM 20.65-b04-466.1</p>
+  </li>
+</ol>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/gephi-about.png" width="400" height="600" /></center>
+
+<p>Moreover, according to <a href="https://github.com/kikohs">@Kikohs</a>, in your .bash_profile or .zshrc, add:</p>
+
+<p>```vim
+# JAVA,
+# Your java 6 version here
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/1.6.0_51-b11-457.jdk/Contents/Home</p>
+
+<p>function setjdk() {
+    if [ $# -ne 0 ]; then
+        removeFromPath ‘/System/Library/Frameworks/JavaVM.framework/Home/bin’
+        if [ -n “${JAVA_HOME+x}” ]; then
+            removeFromPath $JAVA_HOME
+        fi
+        export JAVA_HOME=<code>/usr/libexec/java_home -v $@</code>
+        export PATH=$JAVA_HOME/bin:$PATH
+    fi
+    echo JAVA_HOME set to $JAVA_HOME
+    java -version
+}
+function removeFromPath() {
+    export PATH=$(echo $PATH | sed -E -e “s;:$1;;” -e “s;$1:?;;”)
+}
+```</p>
+
+<p>Those functions allow you to quickly switch for java 6 to java 7 and vice-versa:</p>
+
+<p><code>vim
+$&gt; setjdk 1.6  # java 6
+$&gt; setjdk 1.7  # java 7
+</code>
+Attached a picture of <a href="http://networkdata.ics.uci.edu/data.php?id=5">American College football</a> Network I drawed using Gephi :P</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/football_generate.png" /></center>
+
+<p><em>Reference:</em> 
+1. <a href="https://github.com/gephi/gephi/issues/748">About the ISSUE on Gephi</a>
+2. <a href="https://forum.gephi.org/viewtopic.php?f=24&amp;t=3034&amp;start=20">Discussions on Gephi forums</a></p>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>[论文学习笔记] ICDM12-Topic-aware Social Influence Propagation Models(话题感知社会影响力传播模型) - Sumnous's Blog</title>
+  <meta name="author" content="sumnous">
+
+  
+  <meta name="description" content="Barbieri, N., Bonchi, F., &amp; Manco, G. (2012, December). Topic-aware social influence propagation models. In Data Mining (ICDM), 2012 IEEE 12th &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/">
+  <link href="images/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Sumnous's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+
+function addBlankTargetForLinks () {
+
+  $('a[href^="http"]').each(function(){
+
+      $(this).attr('target', '_blank');
+
+  });
+
+}
+
+$(document).bind('DOMNodeInserted', function(event) {
+
+  addBlankTargetForLinks();
+
+});
+
+</script>
+
+<script type="text/javascript">
+
+function addBlankTargetForLinks (){
+
+  $(""a[href^="http"]"").each(function(){
+
+      $(this).attr(""target"", ""_blank"");
+
+  });
+
+}
+
+￥（document）.bind（""DOMNodeInserted""， function（event） {
+
+  addBlankTargetForLinks（）;
+
+}）;
+
+</script>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-50839917-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Sumnous's Blog</a></h1>
+  
+    <h2>LEARN TO DEATH</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:sumnous.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">[论文学习笔记] ICDM12-Topic-aware Social Influence Propagation Models(话题感知社会影响力传播模型)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-04T17:10:28+08:00" pubdate data-updated="true">Sep 4<span>th</span>, 2013</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote>
+  <p>Barbieri, N., Bonchi, F., &amp; Manco, G. (2012, December). Topic-aware social influence propagation models. In Data Mining (ICDM), 2012 IEEE 12th International Conference on (pp. 81-90). IEEE.</p>
+</blockquote>
+
+<p>社交网络传播模型的共同特征：</p>
+
+<ol>
+  <li>用户成为活跃用户的可能性随着他的邻居中活跃用户的数量单调增加。</li>
+  <li>影响过程遵循Progressive规则，即用户只可能从非活跃受影响变成活跃，而不可能由活跃变成非活跃。</li>
+</ol>
+
+<p>Linear Threshold Model 线性阈值模型：是以接受者为中心的模型
+Independent Cascade Model 独立级联模型：是以发射者为中心的模型</p>
+
+<p>考虑时间延迟的模型(Continuous Time Delay Model)：在传统的IC，LT基础上引入连续时间延迟，也就是CTIC，CTLT。用于话题传播行为分析。</p>
+
+<p>目标问题：确定有影响力的用户（例如病毒式营销中）</p>
+
+<p>问题：离散对待的时间和大量参数（效率，可扩展行和过度拟合（过适，是指在调适一个统计模型时，使用过多参数。））</p>
+
+<p>观察：1）用户有不同的兴趣；2）物品有不同的特征；3）用户有可能喜欢相似的物品
+研究对象：物品特征，用户兴趣，社会影响</p>
+
+<!--more-->
+
+<p>本文贡献：</p>
+
+<ol>
+  <li>TIC和TLT</li>
+  <li>Expectation Maximization (EM) 估计TIC模型的参数</li>
+  <li>AIR (Authoritativeness-Interest-Relevance) 用户权威和话题兴趣取代user-to-user influence，减少参数</li>
+  <li>Generalized Expectation Maximization (GEM) 用来学习最大似然来估计AIR模型的参数</li>
+  <li>使传统的IC模型可预测所接受的特定物品</li>
+  <li>考虑物品特征</li>
+</ol>
+
+<p>在之前的topic-wise social influence加入Viral Marketing (病毒式营销) &amp; Influence Maximization方法</p>
+
+<p>σm(S) is monotone &amp; submodular （子模函数，随着加入集合的元素越多,  F 函数值获得的受益越少(效用边际递减)。）</p>
+
+<p>Influence maximization</p>
+
+<p>TIC (Topic-aware Independent Cascade Model)
+TLT (Topic-aware Linear Threshold Model)</p>
+
+<ol>
+  <li>
+    <p>learning parameters of TIC model using Expectation-Maximization method (Complete-Data Expectation Likelihood[14], or log-likelihood maximization)</p>
+  </li>
+  <li>
+    <p>加入新物品item</p>
+  </li>
+</ol>
+
+<p>AIR propagation model
+parameters:</p>
+
+<ol>
+  <li>authoritativeness of a user in a topic</li>
+  <li>interest of a user for a topic</li>
+  <li>relevance of an item for a topic</li>
+</ol>
+
+<p>principle: general threshold model [2]
+用selection scaling factors来控制时间衰变对信息传播的影响</p>
+
+<p>Influence Maximization in AIR: </p>
+
+<ul>
+  <li>Greedy</li>
+  <li>Top-k authorities</li>
+</ul>
+
+<p>存在的问题和可以改进的地方：</p>
+
+<ol>
+  <li>这篇文章只是一个网络，不是异构网络，可以考虑构成user,item,topic三个网络的异构网络</li>
+  <li>只考虑到影响，并没有考虑到同质（personal影响，不只是结构影响，有可能是节点的属性影响传播）和环境</li>
+  <li>权威模型并不代表真的有效，容易被影响的人才能决定网络中信息的传播</li>
+  <li>网络的update，这篇文章只有item的update，并未涉及user关系的update</li>
+</ol>
+
+<p>未来工作的难点：</p>
+
+<ol>
+  <li>加入点东西使得影响的人更多影响力更大（Influence Maximization）</li>
+  <li>改进模型使得计算速度更快</li>
+</ol>
+
+<blockquote>
+  <p>重要参考文献：
+<a href="http://pdf.aminer.org/000/472/900/maximizing_the_spread_of_influence_through_a_social_network.pdf">Kempe, D., Kleinberg, J., &amp; Tardos, É. (2003, August). Maximizing the spread of influence through a social network. In Proceedings of the ninth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 137-146). ACM.</a></p>
+</blockquote>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/">https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">sumnous</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-04T17:10:28+08:00" pubdate data-updated="true">Sep 4<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/papernote/'>PaperNote</a>
+  
+</span>
+
+
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+      <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_32x32">
+  <a class="jiathis_button_qzone"></a>
+  <a class="jiathis_button_tsina"></a>
+  <a class="jiathis_button_tqq"></a>
+  <a class="jiathis_button_weixin"></a>
+  <a class="jiathis_button_renren"></a>
+  <a href="http://www.jiathis.com/share?uid=1928170" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+  <a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1928170" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1928170"></script>
+<!-- UY END -->
+
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/08/28/Goagent-SSL-Error/" title="Previous Post: 解决Mac下Chrome浏览器用Goagent打开HTTPS网站SSL证书错误不受信任问题">&laquo; 解决Mac下Chrome浏览器用Goagent打开HTTPS网站SSL证书错误不受信任问题</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms/" title="Next Post: A review of overlapping commuity detection algorithms">A review of overlapping commuity detection algorithms &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/">2013-Data Fusion_Resolving Conflicts from Multiple Sources-PaperNote</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/24/gephi-on-mac/">Gephi on OS X Mavericks 10.9</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/13/install_octave/">Install Octave on Mac OS X 10.9</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/05/a-one-and-a-two/">a one and a two 《一一》</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/08/interview_sumnous/">最近的面试经历-百度，搜狗，腾讯滴滴打车，豆瓣</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/13/random-pick-function/">随机数生成函数面试题</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <p>数据挖掘在读女博士，程序员，美剧迷，宅，喜欢玩。Data Mining, Python, Mac, Social Computing, Machine Learning...</p>
+  <p>新浪微博: <a href="http://weibo.com/sumno">@sumnous_t</a><br/>
+     Twitter: <a href="https://twitter.com/sumnous">@sumnous</a><br/>
+     豆瓣: <a href="https://douban.com/people/sumnous-t">@sumnous</a><br/>
+     Github: <a href="https://github.com/sumnous">@sumnous</a></p>
+  </p>
+</section>
+<!-- UYAN NEW COMMENT BEGIN -->
+<div id="uyan_newcmt_unit"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1928170"></script> <!-- 如果已经过加载此行JS，即可不用重复加载 -->
+<!-- UYAN NEW COMMENT END -->
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<p>
+  Copyright &copy; 2015 - sumnous -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  - <span class="credit">Theme by <a href="http://www.gehaxelt.in">Gehaxelt</a></span>
+  <span class="credit">and <a href="http://www.it-solutions-neef.de">IT Solutions Neef</a></span>
+</p>
+
+<p id = "back-top">
+      <a href="#top"><span></span>Back to Top</a>
+</p> 
+
+<style type="text/css">
+#back-top {
+  position: fixed;
+  bottom: 80px;
+  right: 220px;
+}
+
+#back-top a {
+  width: 50px;
+  display: block;
+  text-align: center;
+  font: 9px/100% Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #bbb;
+
+  /* transition */
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  transition: 1s;
+}
+#back-top a:hover {
+  color: #000;
+}
+
+/* arrow icon (span tag) */
+#back-top span {
+  width: 50px;
+  height: 50px;
+  display: block;
+  margin-bottom: 7px;
+  background: #ddd url(https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/top.png) no-repeat center center;
+
+  /* rounded corners */
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+
+  /* transition */
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  transition: 1s;
+}
+/*
+#back-top a:hover span {
+  background-color: #888;
+}
+*/
+</style>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+  // hide #back-top first
+  $("#back-top").hide();
+
+  // fade in #back-top
+  $(function () {
+      $(window).scroll(function () {
+          if ($(this).scrollTop() > 100) {
+              $('#back-top').fadeIn();
+          } else {
+              $('#back-top').fadeOut();
+          }
+      });
+
+      // scroll body to 0px on click
+      $('#back-top a').click(function () {
+          $('body,html').animate({
+              scrollTop: 0
+          }, 800);
+          return false;
+      });
+  });
+
+});
+</script>
+
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

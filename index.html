@@ -1,0 +1,1545 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Sumnous's Blog</title>
+  <meta name="author" content="sumnous">
+
+  
+  <meta name="description" content="paper link 问题现状背景 数据管理应用需要整合多个来源的数据，这些多个来源的数据有可能冲突，为了提供数据的质量，需要解决冲突以及发掘反应真实世界的values，这个过程也叫做数据融合。 传统的方法是投票 论文的贡献（解决的问题） 本文提出了一种在大量有冲突的数据源中发现true &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://sumnous.github.io/">
+  <link href="images/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Sumnous's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<script type="text/javascript">
+
+function addBlankTargetForLinks () {
+
+  $('a[href^="http"]').each(function(){
+
+      $(this).attr('target', '_blank');
+
+  });
+
+}
+
+$(document).bind('DOMNodeInserted', function(event) {
+
+  addBlankTargetForLinks();
+
+});
+
+</script>
+
+<script type="text/javascript">
+
+function addBlankTargetForLinks (){
+
+  $(""a[href^="http"]"").each(function(){
+
+      $(this).attr(""target"", ""_blank"");
+
+  });
+
+}
+
+￥（document）.bind（""DOMNodeInserted""， function（event） {
+
+  addBlankTargetForLinks（）;
+
+}）;
+
+</script>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-50839917-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Sumnous's Blog</a></h1>
+  
+    <h2>LEARN TO DEATH</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:sumnous.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/">2013-Data Fusion_Resolving Conflicts From Multiple Sources-PaperNote</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-06T11:10:28+08:00" pubdate data-updated="true">Sep 6<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41657.pdf">paper link</a></p>
+
+<h2 id="section">问题现状背景</h2>
+
+<p>数据管理应用需要整合多个来源的数据，这些多个来源的数据有可能冲突，为了提供数据的质量，需要解决冲突以及发掘反应真实世界的values，这个过程也叫做数据融合。</p>
+
+<p>传统的方法是投票</p>
+
+<h2 id="section-1">论文的贡献（解决的问题）</h2>
+
+<p>本文提出了一种在大量有冲突的数据源中发现true values的数据融合方法，并且数据源之间可以copy。</p>
+
+<ol>
+  <li>考虑数据源之间copy的情况（但不支持两个数据源互相copy）</li>
+  <li>truth discovery准确率提高</li>
+  <li>可扩展到大数据源的情况</li>
+</ol>
+
+<h2 id="section-2">举例</h2>
+
+<p>本文用一个例子，详细的对应计算贯穿全文，便于理解。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-1.png" /></center>
+
+<h2 id="section-3">主要方法/特征</h2>
+
+<p>Intuition：</p>
+
+<ol>
+  <li>共享正确的值不一定表明copy，但如果两个源独立则共享错误值是一个低概率事件。</li>
+  <li>考虑投票的准确性（数据源的准确性用概率表示，需要鉴别数据源的独立性以及哪个源是copier）</li>
+</ol>
+
+<h3 id="source-accuracy-in-data-fusion">Source Accuracy in data fusion</h3>
+
+<p>Problem: 给定数据源，对于每一个object确定其true value</p>
+
+<p>计算一个数据源的准确性概率：</p>
+
+<p>将数据源S的accuracy记作A(S)，计算方式为源中所有值为真的平均概率，S提供一个特定错误值的概率为(1-A(S))/n。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-2.png" /></center>
+
+<p>计算一个value为真的概率：</p>
+
+<p>采用贝叶斯概率计算一个值为真的概率P(v)=Pr(v true/O的所有观察值)，通过计算先验概率Pr(O的所有观察值/v true)，Pr(O的所有观察值)</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-3.png" /></center>
+
+<p>为了简化计算，v的置信度(<em>confidence</em>)记作C(v)，数据源的准确分数记作A’(S)，则C(v)为所有数据源分数的求和，P(v)也可以用C(v)表示。</p>
+
+<h3 id="copying-relationships-in-data-fusion">Copying relationships in data fusion</h3>
+
+<p>分两种数据源：独立和有copy关系。</p>
+
+<p>两个数据源提供的值分三种情况：Ot表示S1和S2提供相同的true value；Of表示S1和S2提供相同的false value；Od表示S1和S2提供different value；这三种value集合共同构成Phi空间。</p>
+
+<p>依然采用贝叶斯概率，分别计算Pr(Phi/S1与S2独立)，Pr(Phi/S1-&gt;S2)，Pr(Phi/S2-&gt;S1)，可由此计算Pr(S1与S2独立/Phi)</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-4.png" /></center>
+
+<h3 id="independent-vote-count-of-a-value">Independent Vote Count of a Value</h3>
+
+<p>即使copier也会提供不同于原始源的值，我们会计算每个值的independent vote。首先，采用一种贪心算法去决定所有源独立性的排序，越独立的排序越靠前。然后，再计算S独立的提供v相较于其他源S0提供v的概率，I(S)。则v的confidence为，C(v) = A’(S)*I(S)对所有源的求和。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-5.png" /></center>
+
+<h3 id="iterative-algorithm---accucopy">Iterative Algorithm - ACCUCOPY</h3>
+
+<p>迭代计算：accuracy of sources, copying between sources, and confidence of values</p>
+
+<p>初始状态给每个源初始化相同的准确度，每个value相同的正确概率。1）根据前次的C(v)计算copying关系；2）更新C(v)；3）更新源的准确度。</p>
+
+<p>最多2l*n0轮收敛(l为object个数，n0为每个源的value个数)，每轮的时间复杂度为O(object的个数x源的个数的平方xlog(源的个数))</p>
+
+<h2 id="section-4">效果结论</h2>
+
+<p>http://lunadong.com/fusionDataSets.htm上AbeBooks.com各个书店的计算机类图书书单。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-6.png" /></center>
+
+<h2 id="section-5">我的总结</h2>
+
+<p>原先的判断true value的投票算法并未考虑源之间互相抄袭的情况，本文的算法中考虑了这种情况后，准确率大大提高。</p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/">https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/24/gephi-on-mac/">Gephi on OS X Mavericks 10.9</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-24T12:10:28+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>“Gephi is an open source visualization and exploration platform available on Windows, Linux and Mac OS X. It supports all types of networks – directed, undirected and mixed, and is capable of handling very large network graphs of up to one million nodes. Various metrics are supported including betweenness, closeness, diameter, clustering coefficient, average shortest path, pagerank and HITS. Dynamic filtering allows edges and/or nodes to be selected based on network structure or data. Ideal for social network analysis, link analysis and biological network analysis. Perhaps the most advanced of the open source tools.” <a href="http://butleranalytics.com/5-free-social-network-analysis-tools/">&lt;5 Free Social Network Analysis Tools - Butler Analytics&gt;</a></em></p>
+
+<p>Running OS X Mavericks 10.9.4. I downloaded <a href="http://gephi.github.io/users/download/">Gephi 0.8.2-beta</a> and it would not load correctly. After starting, it would freeze if I clicked anything. After looking for the solutions on the internet, I found this is a show-stopper for every normal Mac user caused by not supporting JAVA 7(which is installed on updating Mac 10.9) on Gephi. So we need to swich back to JAVA 6, it’s really annoying…</p>
+
+<p>Took me almost a day to solve this problem… :( </p>
+
+<p>This is the steps what I did to fix the problem for running Gephi on Mac OS X 10.9 <a href="https://github.com/joernhees">@joernhees</a>:</p>
+
+<ol>
+  <li>
+    <p>Download and install JAVA 1.6: <a href="http://support.apple.com/kb/DL1572">http://support.apple.com/kb/DL1572</a></p>
+  </li>
+  <li>
+    <p>Delete your gephi settings dir: <code>rm -r ~/Library/Application\ Support/gephi</code></p>
+  </li>
+  <li>
+    <p>Find your java home with <code>/usr/libexec/java_home -v 1.6</code>, it should print something like <code>/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home</code></p>
+  </li>
+  <li>
+    <p>Edit <code>/Applications/Gephi.app/Contents/Resources/gephi/etc/gephi.conf</code> to set your jdkhome e.g. like this: <code>echo "jdkhome=\"$(/usr/libexec/java_home -v 1.6)\"" &gt;&gt; /Applications/Gephi.app/Contents/Resources/gephi/etc/gephi.conf</code></p>
+  </li>
+  <li>
+    <p>Start Gephi and open the Les Miserables sample, if you see the graph good.</p>
+  </li>
+  <li>
+    <p>Check Gephi’s about for the line saying Java: 1.6.0_65; Java HotSpot(TM) 64-Bit Server VM 20.65-b04-466.1</p>
+  </li>
+</ol>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/gephi-about.png" width="400" height="600" /></center>
+
+<p>Moreover, according to <a href="https://github.com/kikohs">@Kikohs</a>, in your .bash_profile or .zshrc, add:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"># JAVA<span class="p">,</span>
+</span><span class="line"># Your java <span class="m">6</span> <span class="k">version</span> here
+</span><span class="line">export JAVA_HOME<span class="p">=</span><span class="sr">/Library/</span>Java<span class="sr">/JavaVirtualMachines/</span><span class="m">1</span>.<span class="m">6</span>.<span class="m">0</span>_<span class="m">51</span><span class="p">-</span>b11<span class="m">-457</span>.jdk<span class="sr">/Contents/</span>Home
+</span><span class="line">
+</span><span class="line"><span class="k">function</span> setjdk<span class="p">()</span> {
+</span><span class="line">    <span class="k">if</span> [ $# <span class="p">-</span><span class="k">ne</span> <span class="m">0</span> ]; then
+</span><span class="line">        removeFromPath <span class="s1">&#39;/System/Library/Frameworks/JavaVM.framework/Home/bin&#39;</span>
+</span><span class="line">        <span class="k">if</span> [ <span class="p">-</span><span class="k">n</span> <span class="s2">&quot;${JAVA_HOME+x}&quot;</span> ]; then
+</span><span class="line">            removeFromPath $JAVA_HOME
+</span><span class="line">        <span class="k">fi</span>
+</span><span class="line">        export JAVA_HOME<span class="p">=</span>`<span class="sr">/usr/</span>libexec/java_home <span class="p">-</span><span class="k">v</span> $@`
+</span><span class="line">        export PATH<span class="p">=</span>$JAVA_HOME/<span class="nb">bin</span>:$PATH
+</span><span class="line">    <span class="k">fi</span>
+</span><span class="line">    echo JAVA_HOME <span class="k">set</span> <span class="k">to</span> $JAVA_HOME
+</span><span class="line">    java <span class="p">-</span><span class="k">version</span>
+</span><span class="line">}
+</span><span class="line"><span class="k">function</span> removeFromPath<span class="p">()</span> {
+</span><span class="line">    export PATH<span class="p">=</span>$<span class="p">(</span>echo $PATH <span class="p">|</span> sed <span class="p">-</span>E <span class="p">-</span><span class="k">e</span> <span class="s2">&quot;s;:$1;;&quot;</span> <span class="p">-</span><span class="k">e</span> <span class="s2">&quot;s;$1:?;;&quot;</span><span class="p">)</span>
+</span><span class="line">}
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Those functions allow you to quickly switch for java 6 to java 7 and vice-versa:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$<span class="p">&gt;</span> setjdk <span class="m">1</span>.<span class="m">6</span>  # java <span class="m">6</span>
+</span><span class="line">$<span class="p">&gt;</span> setjdk <span class="m">1</span>.<span class="m">7</span>  # java <span class="m">7</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>Attached a picture of <a href="http://networkdata.ics.uci.edu/data.php?id=5">American College football</a> Network I drawed using Gephi :P</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/football_generate.png" /></center>
+
+<p><em>Reference:</em> 
+1. <a href="https://github.com/gephi/gephi/issues/748">About the ISSUE on Gephi</a>
+2. <a href="https://forum.gephi.org/viewtopic.php?f=24&amp;t=3034&amp;start=20">Discussions on Gephi forums</a></p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/07/24/gephi-on-mac/">https://sumnous.github.io/blog/2014/07/24/gephi-on-mac/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/13/install_octave/">Install Octave on Mac OS X 10.9</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-13T10:10:28+08:00" pubdate data-updated="true">Jul 13<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently I am working on Stanford Machine Learning Course By Andrew NG on Coursera, Andrew recommended Octave to build prototype quickly. It’s been tricky to install octave on Mac, so I shared my process of intalling it. </p>
+
+<p>1.Install <a href="https://xquartz.macosforge.org/landing/">XQuartz</a></p>
+
+<p>2.Install Xcode and Command Line Tools3</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ xcode<span class="p">-</span>select <span class="p">--</span>install
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>3.Install <a href="https://github.com/Homebrew/homebrew/wiki/installation">homebrew</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew doctor
+</span><span class="line">$ brew <span class="k">update</span> &amp;&amp; brew upgrade
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It’s important to solve all the warning in homebrew, so it can work smoothly when installing octave.</p>
+
+<p>4.Import the scientific computing packages</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew tap homebrew/science
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>5.Install Octave</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew install octave
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>6.Install gnuplot</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew install gnuplot
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>(Update: As phseven pointed out, gnuplot will be automatically installed with octave, but in some cases it won’t support X11.) For such cases, do the following:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew uninstall gnuplot
+</span><span class="line">$ brew install gnuplot <span class="p">--</span>with<span class="p">-</span><span class="k">x</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If you plot something in Octave, and it occures problems like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">gnuplot<span class="p">&gt;</span> <span class="k">set</span> terminal aqua enhanced <span class="nb">title</span> <span class="s2">&quot;Figure 1&quot;</span>  font <span class="s2">&quot;*,6&quot;</span> dashlength <span class="m">1</span>
+</span><span class="line">	           			^	        	
+</span><span class="line">	    line <span class="m">0</span>: unknown or ambiguous terminal type; type just <span class="s1">&#39;set terminal&#39;</span> <span class="k">for</span> <span class="k">a</span> <span class="nb">list</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Just run:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">setenv<span class="p">(</span><span class="s2">&quot;GNUTERM&quot;</span><span class="p">,</span><span class="s2">&quot;X11&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>befor you plot anything, e.g.,</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">plot<span class="p">(</span><span class="k">x</span><span class="p">,</span><span class="k">y</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It will be convenient if you setup Octave startup file: <code>vim ~/.octaverc</code> and add the line <code>setenv GNUTERM x11</code>.</p>
+
+<p>7.Open Octave just run <code>octave</code>, if you want to change the look of your Octave, just input <code>PS1('&gt;&gt; ')</code></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">octave:<span class="m">1</span><span class="p">&gt;</span>
+</span><span class="line">octave:<span class="m">1</span><span class="p">&gt;</span> PS1<span class="p">(</span><span class="s1">&#39;&gt;&gt; &#39;</span><span class="p">)</span>
+</span><span class="line"><span class="p">&gt;&gt;</span>
+</span><span class="line"><span class="p">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/13/install_octave/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/05/a-one-and-a-two/">A One and a Two 《一一》</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-05T11:10:28+08:00" pubdate data-updated="true">Jul 5<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p2119675128.jpg" /></center>
+
+<p>173分钟，却好似经历了人生的缩影，幼儿的洋洋，青少年的婷婷、莉莉、胖子，中年人的NJ，敏敏，阿弟，阿弟媳妇，阿瑞，蒋妈，云云，大田，还有NJ的老板，老年人的婆婆。</p>
+
+<p>很多镜头平静却无法忘却，婆婆去世时婷婷手中的折纸，大田吹着口哨玩着鸟，洋洋跳进游泳池，胖子从旅馆中跑掉婷婷落寞又坚强的走在马路上，阿弟孩子满月闹剧NJ呆呆的又很镇静的站在门口，日本宾馆中阿瑞放声大哭映在玻璃上的影子。。。</p>
+
+<p>就像人生的回放，平淡而忧伤。</p>
+
+<p>就像NJ说的，人生虽然有很多遗憾，以为重活一次一定会不一样，可结果其实差不多，可再活一次真的没有那个必要了。如果带着记忆让我再活一次，我想我一定不会了，人生太累，过去就过去了，那些遗憾，那些错过，才是我们始终念念不忘的，记性好的人太痛苦，所以还是不要再回去了。</p>
+
+<p>可能大田算活得明白的一个，站的高的人，思想境界高的人，可能看这个世界真的是不一样的，他们都在做自己感兴趣可能别人却不理解的事情。</p>
+
+<p>还有洋洋，你们看不到的，我拍给你们看，还有他在片尾终于肯对已经过世的婆婆说的那段话，“我好想你。尤其是当我看到那个，还没有名字的小表弟，就会想起你常跟我说：你老了。我很想跟他说我觉得……我也老了。” </p>
+
+<p>也许在一年前我不会喜欢这种又长又慢又无聊的电影，可如今看起来却好像我活在了这个电影里，想哭，想笑，却又无奈。</p>
+
+<p>就像豆瓣上某篇影评的的题目那样，年华一帧一帧的逝去。</p>
+
+<p>岁月静好。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/05/a-one-and-a-two/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/08/interview_sumnous/">最近的面试经历-百度，搜狗，腾讯滴滴打车，豆瓣</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-08T22:10:28+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我的简历背景是主要做社区发现算法，之前做同构网络的社区发现算法，现在做异构网络的（学术网络为例），每位面试官都会让我介绍我做的内容。我写了图像处理的经历，百度和滴滴的面试官对这一经历很感兴趣。</p>
+
+<h3 id="section">百度</h3>
+
+<p>职位是机器学习。</p>
+
+<p>第一面：</p>
+
+<p>介绍我的社区发现论文，并给出论文中我认为创新的地方。我说了三点。</p>
+
+<p>另外：</p>
+
+<ol>
+  <li>
+    <p>如何帮助超市定特价商品。</p>
+  </li>
+  <li>
+    <p>一个黑盒里是一个图，结构未知，只知道点的个数是n，边的个数是m，写公式给出两个点相连的概率。</p>
+  </li>
+</ol>
+
+<p>第二面：（女面试官！）</p>
+
+<p>写代码：给一个文档，以及stopwords，统计除掉停用词之后的词频统计。</p>
+
+<p>之后问到给一个查询query，如何匹配相应地文档。</p>
+
+<p>由于当时并不知道TF-IDF，向量空间模型（VSM），以及sphinx全文检索技术这一块，这一面减分很多。其实之后看了下资料，比较简单。</p>
+
+<p>第三面：</p>
+
+<p>隔了一周部门的leader面的。问得跟项目相关。给我提得建议是系统学习下机器学习，这样再做数据挖掘的时候会有更好的全局观。虽悲剧但受教。</p>
+
+<p>一道概率题，54张牌，平均分成三堆，大小王在同一堆的概率？（17/53）</p>
+
+<h3 id="section-1">搜狗</h3>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/08/interview_sumnous/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/13/random-pick-function/">随机数生成函数面试题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-13T16:10:28+08:00" pubdate data-updated="true">May 13<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>前阵子去某公司笔试，有道题是</p>
+
+<blockquote>
+  <p>已知随机数生成函数f()，返回0的概率是60%，返回1的概率是40%。根据f()求随机数函数g()，使返回0和1的概率是50%，不能用已有的随机生成库函数。</p>
+</blockquote>
+
+<p>分析：</p>
+
+<p>调用f()两次即可，会出现4种结果(0,0), (0,1), (1,0), (1,1)，其中出现(0,1), (1,0)的概率是一样的，可以构造出等概率事件，比如出现(0,1)可返回0，出现(1,0)可返回1，如果出现其他两种情况则舍掉重新调用。</p>
+
+<p>代码如下：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">g</span><span class="p">():</span>
+</span><span class="line">    <span class="k">while</span><span class="p">(</span><span class="n">true</span><span class="p">):</span>
+</span><span class="line">        <span class="n">a</span> <span class="o">=</span> <span class="n">f</span><span class="p">()</span>
+</span><span class="line">        <span class="n">b</span> <span class="o">=</span> <span class="n">f</span><span class="p">()</span>
+</span><span class="line">        <span class="k">if</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class="line">            <span class="k">return</span> <span class="mi">0</span>
+</span><span class="line">        <span class="k">if</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+</span><span class="line">            <span class="k">return</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>这道笔试题到此为止。</p>
+
+<p>接下来扩展一下，<em>如何实现这个随机数生成函数f()，可用random()，也就是以指定概率获取元素</em>。《Python Cookbook》中有此示例。分析一下，也就是在(0, 0.6]区间内取0，在(0.6, 1]区间内取1。扩展到多个数也一样。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/05/13/random-pick-function/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/11/octopress-build-blog-on-github/">Octopress Build Blog on Github 个人建站实录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-11T16:10:28+08:00" pubdate data-updated="true">May 11<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>为什么选择Octopress：静态+Markdown+Git提交+不需要服务器+有基础的话折腾1-2个小时就能看到效果（这些都是我喜欢的）</p>
+
+<p>这篇<a href="http://jackycode.github.io/blog/2014/02/23/record/">《记录：Octopress建站之旅》</a>很易上手，有篇易懂易follow的教程是好的开始~(多亏池大 <a href="http://weibo.com/idreamland">@池建强</a> 分享了 <a href="http://weibo.com/jackycode">@Jacky130</a> 的博客，我才看到了这篇文章，才想自己动手来做这件事情)</p>
+
+<h3 id="gitruby">1. 首先安装Git和Ruby，检查是否安装好</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git --version
+</span><span class="line">ruby --version</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="octopressoctopress">2. 安装Octopress到本地，之后的所有操作都在octopress文件下</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git clone git://github.com/imathis/octopress.git octopress
+</span><span class="line">cd octopress
+</span><span class="line">gem install bundler
+</span><span class="line">rbenv rehash
+</span><span class="line">bundle install</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>可能会有权限问题，请加sudo。在执行<code>rbenv rehash</code>的时候系统提示我没有此命令，于是参考<a href="http://jianshu.io/p/ACs3kA">这里</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git clone https://github.com/sstephenson/rbenv.git ~/.rbenv</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>将$PATH写入~/.bash_profile，也可以参考<a href="https://github.com/sstephenson/rbenv#basic-github-checkout">rbenv的git页面</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">export RBENV_ROOT="${HOME}/.rbenv"
+</span><span class="line">if [ -d "${RBENV_ROOT}" ]; then
+</span><span class="line">  export PATH="${RBENV_ROOT}/bin:${PATH}"
+</span><span class="line">  eval "$(rbenv init -)"
+</span><span class="line">fi</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>检查rbenv是否可用<code>rbenv -v</code>。<code>rbenv rehash</code>这条命令，每当切换 ruby 版本和执行 bundle install 之后必须执行这个命令。</p>
+
+<h3 id="section">3. 安装主题</h3>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/05/11/octopress-build-blog-on-github/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/10/leetcode-valid-parentheses-at-python/">[Leetcode] Valid Parentheses @Python</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-10T14:21:48+08:00" pubdate data-updated="true">May 10<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://oj.leetcode.com/problems/valid-parentheses/">Problem</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class="line">    <span class="c"># @return a boolean</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">isValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="bp">True</span>
+</span><span class="line">        <span class="n">left</span> <span class="o">=</span> <span class="s">&#39;([{&#39;</span>
+</span><span class="line">        <span class="n">right</span> <span class="o">=</span> <span class="s">&#39;)]}&#39;</span>
+</span><span class="line">        <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+</span><span class="line">            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="s">&#39;(&#39;</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="s">&#39;[&#39;</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="s">&#39;{&#39;</span><span class="p">:</span>
+</span><span class="line">                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span class="line">                <span class="k">continue</span>
+</span><span class="line">            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+</span><span class="line">                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+</span><span class="line">                    <span class="k">if</span> <span class="ow">not</span> <span class="n">stack</span> <span class="ow">or</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">left</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+</span><span class="line">                        <span class="k">return</span> <span class="bp">False</span>
+</span><span class="line">                    <span class="k">else</span><span class="p">:</span>
+</span><span class="line">                        <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">                        <span class="k">continue</span>
+</span><span class="line">        <span class="k">return</span> <span class="ow">not</span> <span class="n">stack</span>
+</span><span class="line"><span class="c"># test</span>
+</span><span class="line"><span class="n">s</span> <span class="o">=</span> <span class="n">Solution</span><span class="p">()</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">isValid</span><span class="p">(</span><span class="s">&#39;()&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python/">https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python/">[Leetcode] Longest Valid Parentheses @Python</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-10T14:17:58+08:00" pubdate data-updated="true">May 10<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://oj.leetcode.com/problems/longest-valid-parentheses/">Problem</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class="line">    <span class="c"># @param s, a string</span>
+</span><span class="line">    <span class="c"># @return an integer</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">longestValidParentheses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;(&#39;</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;)&#39;</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="mi">0</span>
+</span><span class="line">        <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;)&#39;</span><span class="p">)]</span>
+</span><span class="line">        <span class="n">maxLen</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+</span><span class="line">            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;)&#39;</span> <span class="ow">and</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;(&#39;</span><span class="p">:</span>
+</span><span class="line">                <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">                <span class="n">maxLen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxLen</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</span><span class="line">            <span class="k">else</span><span class="p">:</span>
+</span><span class="line">                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">maxLen</span>
+</span><span class="line"><span class="c">#test</span>
+</span><span class="line"><span class="n">s</span> <span class="o">=</span> <span class="n">Solution</span><span class="p">()</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">longestValidParentheses</span><span class="p">(</span><span class="s">&quot;()(()&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">longestValidParentheses</span><span class="p">(</span><span class="s">&#39;(()()&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">longestValidParentheses</span><span class="p">(</span><span class="s">&#39;)()())&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python/">https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/10/leetcode-edit-distance-at-python/">[Leetcode] Edit Distance @Python</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-10T10:06:08+08:00" pubdate data-updated="true">May 10<span>th</span>, 2014</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://oj.leetcode.com/problems/edit-distance/">Problem</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class="line">    <span class="c"># @return an integer</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">minDistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word1</span><span class="p">,</span> <span class="n">word2</span><span class="p">):</span>
+</span><span class="line">        <span class="n">len1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word1</span><span class="p">)</span>
+</span><span class="line">        <span class="n">len2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word2</span><span class="p">)</span>
+</span><span class="line">        <span class="n">dp</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len2</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len1</span> <span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len1</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">            <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">            <span class="n">dp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">len1</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">len2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">                <span class="k">if</span> <span class="n">word1</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">word2</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class="line">                    <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line">                <span class="k">else</span><span class="p">:</span>
+</span><span class="line">                    <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">dp</span><span class="p">[</span><span class="n">len1</span><span class="p">][</span><span class="n">len2</span><span class="p">]</span>	
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python/">https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/02/dblp-sql/">DBLP数据集SQL导入</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-02T16:10:28+08:00" pubdate data-updated="true">Dec 2<span>nd</span>, 2013</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3 id="dblp">1. 创建数据库DBLP：</h3>
+
+<p><code>show databases; </code></p>
+
+<p><code>create database dblp;</code></p>
+
+<p><code>use dblp;</code></p>
+
+<p>导入数据库：</p>
+
+<p><code>mysql -u root -p dblp &lt;  /Users/ting/workspace/datasets/dblp.sql </code></p>
+
+<p><strong>CODE: <a href="https://github.com/sumnous/DBLP-parser">DBLP-parser</a></strong></p>
+
+<p>三个表：</p>
+
+<p>authors: pid, author</p>
+
+<p>papers: pid, title, year, conference, abstract</p>
+
+<p>cites: pid,cid</p>
+
+<p><code>show tables;</code></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/12/02/dblp-sql/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms/">A Review of Overlapping Commuity Detection Algorithms</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-16T16:10:28+08:00" pubdate data-updated="true">Sep 16<span>th</span>, 2013</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2 id="overlapping-community-detection">Overlapping Community Detection</h2>
+
+<blockquote>
+  <p><a href="http://arxiv.org/abs/1110.5813">Overlapping Community Detection in Networks : the State of the Art and Comparative Study</a></p>
+</blockquote>
+
+<blockquote>
+  <p><a href="http://arxiv.org/abs/0908.1062">Community detection algorithms: a comparative analysis</a></p>
+</blockquote>
+
+<h3 id="old-method">0 OLD METHOD</h3>
+
+<ul>
+  <li>
+    <p>Clustering</p>
+  </li>
+  <li>
+    <p>Graph Cut</p>
+  </li>
+  <li>
+    <p>Modularity-Based Method(is NP-hard to optimize) <a href="http://arxiv.org/pdf/physics/0602124.pdf">[Newman, 2006]</a></p>
+
+    <center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/modularity.png" /></center>
+
+    <ul>
+      <li>
+        <p>Greedy</p>
+      </li>
+      <li>
+        <p>Simulated Annealing</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Girvan-Newman Algorithm (Betweenness, split)</p>
+  </li>
+  <li>
+    <p>Spectral Method</p>
+  </li>
+</ul>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/">[论文学习笔记] ICDM12-Topic-aware Social Influence Propagation Models(话题感知社会影响力传播模型)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-04T17:10:28+08:00" pubdate data-updated="true">Sep 4<span>th</span>, 2013</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote>
+  <p>Barbieri, N., Bonchi, F., &amp; Manco, G. (2012, December). Topic-aware social influence propagation models. In Data Mining (ICDM), 2012 IEEE 12th International Conference on (pp. 81-90). IEEE.</p>
+</blockquote>
+
+<p>社交网络传播模型的共同特征：</p>
+
+<ol>
+  <li>用户成为活跃用户的可能性随着他的邻居中活跃用户的数量单调增加。</li>
+  <li>影响过程遵循Progressive规则，即用户只可能从非活跃受影响变成活跃，而不可能由活跃变成非活跃。</li>
+</ol>
+
+<p>Linear Threshold Model 线性阈值模型：是以接受者为中心的模型
+Independent Cascade Model 独立级联模型：是以发射者为中心的模型</p>
+
+<p>考虑时间延迟的模型(Continuous Time Delay Model)：在传统的IC，LT基础上引入连续时间延迟，也就是CTIC，CTLT。用于话题传播行为分析。</p>
+
+<p>目标问题：确定有影响力的用户（例如病毒式营销中）</p>
+
+<p>问题：离散对待的时间和大量参数（效率，可扩展行和过度拟合（过适，是指在调适一个统计模型时，使用过多参数。））</p>
+
+<p>观察：1）用户有不同的兴趣；2）物品有不同的特征；3）用户有可能喜欢相似的物品
+研究对象：物品特征，用户兴趣，社会影响</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/28/Goagent-SSL-Error/">解决Mac下Chrome浏览器用Goagent打开HTTPS网站SSL证书错误不受信任问题</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-28T16:10:28+08:00" pubdate data-updated="true">Aug 28<span>th</span>, 2013</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>mac下用goagent FQiang总是会遇到https信任问题，每次访问网站都得点，很烦人，搜了一下，这个解决方法比较好。</p>
+
+<p>打开［应用程序］&gt;［实用工具］&gt;［钥匙串访问］，并在左侧导航选择［系统］。</p>
+
+<p>选择顶部的［文件］&gt;［导入项目］，并定位到goagent安装目录的localCA.crt。选择导入。提示输入系统密码。</p>
+
+<p>双击新导入的GoAgent CA证书，展开［信任］选项，确保所有的选择都是［总是信任］。重启浏览器即可。</p>
+
+<p><a href="http://blog.netsh.org/posts/goagent-https-ssl-error_1013.netsh.html">windows下解决方案</a></p>
+
+<p><a href="http://blog.netsh.org/posts/mac-goagent-https-error_1443.netsh.html">mac、iOS下解决方案</a></p>
+
+<p>推荐mac下工具<strong>GoAgentX</strong>，参考<a href="http://iaiai.iteye.com/blog/1608369">教程</a></p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2013/08/28/Goagent-SSL-Error/">https://sumnous.github.io/blog/2013/08/28/Goagent-SSL-Error/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04/">Install PyCharm and JDK on Ubuntu 12.04</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-17T15:48:29+08:00" pubdate data-updated="true">Oct 17<span>th</span>, 2012</time>
+        
+	
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3 id="installing-sun-jdk-7-on-ubuntu-1204">Installing Sun JDK 7 on Ubuntu 12.04:</h3>
+
+<ul>
+  <li>
+    <p>Download the sun jdk 7 tar file <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7u7-downloads-1836413.html">from here</a></p>
+  </li>
+  <li>
+    <p>Extract the tar file:</p>
+  </li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">tar</span> <span class="o">-</span><span class="n">xvzf</span> <span class="n">jdk</span><span class="o">-</span><span class="mi">7</span><span class="n">u4</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>Move extracted folder to this location:</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>Install new java source in system: </li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">install</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javac</span> <span class="n">javac</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javac</span> <span class="mi">1</span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">install</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">java</span> <span class="n">java</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">java</span> <span class="mi">1</span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">install</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javaws</span> <span class="n">javaws</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javaws</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/">2013-Data Fusion_Resolving Conflicts from Multiple Sources-PaperNote</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/24/gephi-on-mac/">Gephi on OS X Mavericks 10.9</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/13/install_octave/">Install Octave on Mac OS X 10.9</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/05/a-one-and-a-two/">a one and a two 《一一》</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/08/interview_sumnous/">最近的面试经历-百度，搜狗，腾讯滴滴打车，豆瓣</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/13/random-pick-function/">随机数生成函数面试题</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <p>数据挖掘在读女博士，程序员，美剧迷，宅，喜欢玩。Data Mining, Python, Mac, Social Computing, Machine Learning&#8230;</p>
+  <p>新浪微博: <a href="http://weibo.com/sumno">@sumnous_t</a><br/>
+     Twitter: <a href="https://twitter.com/sumnous">@sumnous</a><br/>
+     豆瓣: <a href="https://douban.com/people/sumnous-t">@sumnous</a><br/>
+     Github: <a href="https://github.com/sumnous">@sumnous</a></p>
+  </p>
+</section>
+<!-- UYAN NEW COMMENT BEGIN -->
+<div id="uyan_newcmt_unit"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1928170"></script> <!-- 如果已经过加载此行JS，即可不用重复加载 -->
+<!-- UYAN NEW COMMENT END -->
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<p>
+  Copyright &copy; 2015 - sumnous -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  - <span class="credit">Theme by <a href="http://www.gehaxelt.in">Gehaxelt</a></span>
+  <span class="credit">and <a href="http://www.it-solutions-neef.de">IT Solutions Neef</a></span>
+</p>
+
+<p id = "back-top">
+      <a href="#top"><span></span>Back to Top</a>
+</p> 
+
+<style type="text/css">
+#back-top {
+  position: fixed;
+  bottom: 80px;
+  right: 220px;
+}
+
+#back-top a {
+  width: 50px;
+  display: block;
+  text-align: center;
+  font: 9px/100% Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #bbb;
+
+  /* transition */
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  transition: 1s;
+}
+#back-top a:hover {
+  color: #000;
+}
+
+/* arrow icon (span tag) */
+#back-top span {
+  width: 50px;
+  height: 50px;
+  display: block;
+  margin-bottom: 7px;
+  background: #ddd url(https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/top.png) no-repeat center center;
+
+  /* rounded corners */
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+
+  /* transition */
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  transition: 1s;
+}
+/*
+#back-top a:hover span {
+  background-color: #888;
+}
+*/
+</style>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+  // hide #back-top first
+  $("#back-top").hide();
+
+  // fade in #back-top
+  $(function () {
+      $(window).scroll(function () {
+          if ($(this).scrollTop() > 100) {
+              $('#back-top').fadeIn();
+          } else {
+              $('#back-top').fadeOut();
+          }
+      });
+
+      // scroll body to 0px on click
+      $('#back-top a').click(function () {
+          $('body,html').animate({
+              scrollTop: 0
+          }, 800);
+          return false;
+      });
+  });
+
+});
+</script>
+
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

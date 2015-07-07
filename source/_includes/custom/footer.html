@@ -1,0 +1,105 @@
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+<p>
+  Copyright &copy; {{ site.time | date: "%Y" }} - {{ site.author }} -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  - <span class="credit">Theme by <a href="http://www.gehaxelt.in">Gehaxelt</a></span>
+  <span class="credit">and <a href="http://www.it-solutions-neef.de">IT Solutions Neef</a></span>
+</p>
+
+<p id = "back-top">
+      <a href="#top"><span></span>Back to Top</a>
+</p> 
+
+<style type="text/css">
+#back-top {
+  position: fixed;
+  bottom: 80px;
+  right: 220px;
+}
+
+#back-top a {
+  width: 50px;
+  display: block;
+  text-align: center;
+  font: 9px/100% Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #bbb;
+
+  /* transition */
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  transition: 1s;
+}
+#back-top a:hover {
+  color: #000;
+}
+
+/* arrow icon (span tag) */
+#back-top span {
+  width: 50px;
+  height: 50px;
+  display: block;
+  margin-bottom: 7px;
+  background: #ddd url(https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/top.png) no-repeat center center;
+
+  /* rounded corners */
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+
+  /* transition */
+  -webkit-transition: 1s;
+  -moz-transition: 1s;
+  transition: 1s;
+}
+/*
+#back-top a:hover span {
+  background-color: #888;
+}
+*/
+</style>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+
+  // hide #back-top first
+  $("#back-top").hide();
+
+  // fade in #back-top
+  $(function () {
+      $(window).scroll(function () {
+          if ($(this).scrollTop() > 100) {
+              $('#back-top').fadeIn();
+          } else {
+              $('#back-top').fadeOut();
+          }
+      });
+
+      // scroll body to 0px on click
+      $('#back-top a').click(function () {
+          $('body,html').animate({
+              scrollTop: 0
+          }, 800);
+          return false;
+      });
+  });
+
+});
+</script>
+

@@ -1,0 +1,1612 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Sumnous's Blog]]></title>
+  <link href="https://sumnous.github.io/atom.xml" rel="self"/>
+  <link href="https://sumnous.github.io/"/>
+  <updated>2015-07-07T13:16:12+08:00</updated>
+  <id>https://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2013-Data Fusion_Resolving Conflicts from Multiple Sources-PaperNote]]></title>
+    <link href="https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/"/>
+    <updated>2014-09-06T11:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote</id>
+    <content type="html"><![CDATA[<p><a href="http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41657.pdf">paper link</a></p>
+
+<h2 id="section">问题现状背景</h2>
+
+<p>数据管理应用需要整合多个来源的数据，这些多个来源的数据有可能冲突，为了提供数据的质量，需要解决冲突以及发掘反应真实世界的values，这个过程也叫做数据融合。</p>
+
+<p>传统的方法是投票</p>
+
+<h2 id="section-1">论文的贡献（解决的问题）</h2>
+
+<p>本文提出了一种在大量有冲突的数据源中发现true values的数据融合方法，并且数据源之间可以copy。</p>
+
+<ol>
+  <li>考虑数据源之间copy的情况（但不支持两个数据源互相copy）</li>
+  <li>truth discovery准确率提高</li>
+  <li>可扩展到大数据源的情况</li>
+</ol>
+
+<h2 id="section-2">举例</h2>
+
+<p>本文用一个例子，详细的对应计算贯穿全文，便于理解。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-1.png" /></center>
+
+<h2 id="section-3">主要方法/特征</h2>
+
+<p>Intuition：</p>
+
+<ol>
+  <li>共享正确的值不一定表明copy，但如果两个源独立则共享错误值是一个低概率事件。</li>
+  <li>考虑投票的准确性（数据源的准确性用概率表示，需要鉴别数据源的独立性以及哪个源是copier）</li>
+</ol>
+
+<h3 id="source-accuracy-in-data-fusion">Source Accuracy in data fusion</h3>
+
+<p>Problem: 给定数据源，对于每一个object确定其true value</p>
+
+<p>计算一个数据源的准确性概率：</p>
+
+<p>将数据源S的accuracy记作A(S)，计算方式为源中所有值为真的平均概率，S提供一个特定错误值的概率为(1-A(S))/n。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-2.png" /></center>
+
+<p>计算一个value为真的概率：</p>
+
+<p>采用贝叶斯概率计算一个值为真的概率P(v)=Pr(v true/O的所有观察值)，通过计算先验概率Pr(O的所有观察值/v true)，Pr(O的所有观察值)</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-3.png" /></center>
+
+<p>为了简化计算，v的置信度(<em>confidence</em>)记作C(v)，数据源的准确分数记作A’(S)，则C(v)为所有数据源分数的求和，P(v)也可以用C(v)表示。</p>
+
+<h3 id="copying-relationships-in-data-fusion">Copying relationships in data fusion</h3>
+
+<p>分两种数据源：独立和有copy关系。</p>
+
+<p>两个数据源提供的值分三种情况：Ot表示S1和S2提供相同的true value；Of表示S1和S2提供相同的false value；Od表示S1和S2提供different value；这三种value集合共同构成Phi空间。</p>
+
+<p>依然采用贝叶斯概率，分别计算Pr(Phi/S1与S2独立)，Pr(Phi/S1-&gt;S2)，Pr(Phi/S2-&gt;S1)，可由此计算Pr(S1与S2独立/Phi)</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-4.png" /></center>
+
+<h3 id="independent-vote-count-of-a-value">Independent Vote Count of a Value</h3>
+
+<p>即使copier也会提供不同于原始源的值，我们会计算每个值的independent vote。首先，采用一种贪心算法去决定所有源独立性的排序，越独立的排序越靠前。然后，再计算S独立的提供v相较于其他源S0提供v的概率，I(S)。则v的confidence为，C(v) = A’(S)*I(S)对所有源的求和。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-5.png" /></center>
+
+<h3 id="iterative-algorithm---accucopy">Iterative Algorithm - ACCUCOPY</h3>
+
+<p>迭代计算：accuracy of sources, copying between sources, and confidence of values</p>
+
+<p>初始状态给每个源初始化相同的准确度，每个value相同的正确概率。1）根据前次的C(v)计算copying关系；2）更新C(v)；3）更新源的准确度。</p>
+
+<p>最多2l*n0轮收敛(l为object个数，n0为每个源的value个数)，每轮的时间复杂度为O(object的个数x源的个数的平方xlog(源的个数))</p>
+
+<h2 id="section-4">效果结论</h2>
+
+<p>http://lunadong.com/fusionDataSets.htm上AbeBooks.com各个书店的计算机类图书书单。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-6.png" /></center>
+
+<h2 id="section-5">我的总结</h2>
+
+<p>原先的判断true value的投票算法并未考虑源之间互相抄袭的情况，本文的算法中考虑了这种情况后，准确率大大提高。</p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/">https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Gephi on OS X Mavericks 10.9]]></title>
+    <link href="https://sumnous.github.io/blog/2014/07/24/gephi-on-mac/"/>
+    <updated>2014-07-24T12:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/07/24/gephi-on-mac</id>
+    <content type="html"><![CDATA[<p><em>“Gephi is an open source visualization and exploration platform available on Windows, Linux and Mac OS X. It supports all types of networks – directed, undirected and mixed, and is capable of handling very large network graphs of up to one million nodes. Various metrics are supported including betweenness, closeness, diameter, clustering coefficient, average shortest path, pagerank and HITS. Dynamic filtering allows edges and/or nodes to be selected based on network structure or data. Ideal for social network analysis, link analysis and biological network analysis. Perhaps the most advanced of the open source tools.” <a href="http://butleranalytics.com/5-free-social-network-analysis-tools/">&lt;5 Free Social Network Analysis Tools - Butler Analytics&gt;</a></em></p>
+
+<p>Running OS X Mavericks 10.9.4. I downloaded <a href="http://gephi.github.io/users/download/">Gephi 0.8.2-beta</a> and it would not load correctly. After starting, it would freeze if I clicked anything. After looking for the solutions on the internet, I found this is a show-stopper for every normal Mac user caused by not supporting JAVA 7(which is installed on updating Mac 10.9) on Gephi. So we need to swich back to JAVA 6, it’s really annoying…</p>
+
+<p>Took me almost a day to solve this problem… :( </p>
+
+<p>This is the steps what I did to fix the problem for running Gephi on Mac OS X 10.9 <a href="https://github.com/joernhees">@joernhees</a>:</p>
+
+<ol>
+  <li>
+    <p>Download and install JAVA 1.6: <a href="http://support.apple.com/kb/DL1572">http://support.apple.com/kb/DL1572</a></p>
+  </li>
+  <li>
+    <p>Delete your gephi settings dir: <code>rm -r ~/Library/Application\ Support/gephi</code></p>
+  </li>
+  <li>
+    <p>Find your java home with <code>/usr/libexec/java_home -v 1.6</code>, it should print something like <code>/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home</code></p>
+  </li>
+  <li>
+    <p>Edit <code>/Applications/Gephi.app/Contents/Resources/gephi/etc/gephi.conf</code> to set your jdkhome e.g. like this: <code>echo "jdkhome=\"$(/usr/libexec/java_home -v 1.6)\"" &gt;&gt; /Applications/Gephi.app/Contents/Resources/gephi/etc/gephi.conf</code></p>
+  </li>
+  <li>
+    <p>Start Gephi and open the Les Miserables sample, if you see the graph good.</p>
+  </li>
+  <li>
+    <p>Check Gephi’s about for the line saying Java: 1.6.0_65; Java HotSpot(TM) 64-Bit Server VM 20.65-b04-466.1</p>
+  </li>
+</ol>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/gephi-about.png" width="400" height="600" /></center>
+
+<p>Moreover, according to <a href="https://github.com/kikohs">@Kikohs</a>, in your .bash_profile or .zshrc, add:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"># JAVA<span class="p">,</span>
+</span><span class="line"># Your java <span class="m">6</span> <span class="k">version</span> here
+</span><span class="line">export JAVA_HOME<span class="p">=</span><span class="sr">/Library/</span>Java<span class="sr">/JavaVirtualMachines/</span><span class="m">1</span>.<span class="m">6</span>.<span class="m">0</span>_<span class="m">51</span><span class="p">-</span>b11<span class="m">-457</span>.jdk<span class="sr">/Contents/</span>Home
+</span><span class="line">
+</span><span class="line"><span class="k">function</span> setjdk<span class="p">()</span> {
+</span><span class="line">    <span class="k">if</span> [ $# <span class="p">-</span><span class="k">ne</span> <span class="m">0</span> ]; then
+</span><span class="line">        removeFromPath <span class="s1">&#39;/System/Library/Frameworks/JavaVM.framework/Home/bin&#39;</span>
+</span><span class="line">        <span class="k">if</span> [ <span class="p">-</span><span class="k">n</span> <span class="s2">&quot;${JAVA_HOME+x}&quot;</span> ]; then
+</span><span class="line">            removeFromPath $JAVA_HOME
+</span><span class="line">        <span class="k">fi</span>
+</span><span class="line">        export JAVA_HOME<span class="p">=</span>`<span class="sr">/usr/</span>libexec/java_home <span class="p">-</span><span class="k">v</span> $@`
+</span><span class="line">        export PATH<span class="p">=</span>$JAVA_HOME/<span class="nb">bin</span>:$PATH
+</span><span class="line">    <span class="k">fi</span>
+</span><span class="line">    echo JAVA_HOME <span class="k">set</span> <span class="k">to</span> $JAVA_HOME
+</span><span class="line">    java <span class="p">-</span><span class="k">version</span>
+</span><span class="line">}
+</span><span class="line"><span class="k">function</span> removeFromPath<span class="p">()</span> {
+</span><span class="line">    export PATH<span class="p">=</span>$<span class="p">(</span>echo $PATH <span class="p">|</span> sed <span class="p">-</span>E <span class="p">-</span><span class="k">e</span> <span class="s2">&quot;s;:$1;;&quot;</span> <span class="p">-</span><span class="k">e</span> <span class="s2">&quot;s;$1:?;;&quot;</span><span class="p">)</span>
+</span><span class="line">}
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Those functions allow you to quickly switch for java 6 to java 7 and vice-versa:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$<span class="p">&gt;</span> setjdk <span class="m">1</span>.<span class="m">6</span>  # java <span class="m">6</span>
+</span><span class="line">$<span class="p">&gt;</span> setjdk <span class="m">1</span>.<span class="m">7</span>  # java <span class="m">7</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>Attached a picture of <a href="http://networkdata.ics.uci.edu/data.php?id=5">American College football</a> Network I drawed using Gephi :P</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/football_generate.png" /></center>
+
+<p><em>Reference:</em> 
+1. <a href="https://github.com/gephi/gephi/issues/748">About the ISSUE on Gephi</a>
+2. <a href="https://forum.gephi.org/viewtopic.php?f=24&amp;t=3034&amp;start=20">Discussions on Gephi forums</a></p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/07/24/gephi-on-mac/">https://sumnous.github.io/blog/2014/07/24/gephi-on-mac/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Install Octave on Mac OS X 10.9]]></title>
+    <link href="https://sumnous.github.io/blog/2014/07/13/install_octave/"/>
+    <updated>2014-07-13T10:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/07/13/install_octave</id>
+    <content type="html"><![CDATA[<p>Recently I am working on Stanford Machine Learning Course By Andrew NG on Coursera, Andrew recommended Octave to build prototype quickly. It’s been tricky to install octave on Mac, so I shared my process of intalling it. </p>
+
+<p>1.Install <a href="https://xquartz.macosforge.org/landing/">XQuartz</a></p>
+
+<p>2.Install Xcode and Command Line Tools3</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ xcode<span class="p">-</span>select <span class="p">--</span>install
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>3.Install <a href="https://github.com/Homebrew/homebrew/wiki/installation">homebrew</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew doctor
+</span><span class="line">$ brew <span class="k">update</span> &amp;&amp; brew upgrade
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It’s important to solve all the warning in homebrew, so it can work smoothly when installing octave.</p>
+
+<p>4.Import the scientific computing packages</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew tap homebrew/science
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>5.Install Octave</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew install octave
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>6.Install gnuplot</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew install gnuplot
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>(Update: As phseven pointed out, gnuplot will be automatically installed with octave, but in some cases it won’t support X11.) For such cases, do the following:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">$ brew uninstall gnuplot
+</span><span class="line">$ brew install gnuplot <span class="p">--</span>with<span class="p">-</span><span class="k">x</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If you plot something in Octave, and it occures problems like this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">gnuplot<span class="p">&gt;</span> <span class="k">set</span> terminal aqua enhanced <span class="nb">title</span> <span class="s2">&quot;Figure 1&quot;</span>  font <span class="s2">&quot;*,6&quot;</span> dashlength <span class="m">1</span>
+</span><span class="line">	           			^	        	
+</span><span class="line">	    line <span class="m">0</span>: unknown or ambiguous terminal type; type just <span class="s1">&#39;set terminal&#39;</span> <span class="k">for</span> <span class="k">a</span> <span class="nb">list</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Just run:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">setenv<span class="p">(</span><span class="s2">&quot;GNUTERM&quot;</span><span class="p">,</span><span class="s2">&quot;X11&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>befor you plot anything, e.g.,</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">plot<span class="p">(</span><span class="k">x</span><span class="p">,</span><span class="k">y</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It will be convenient if you setup Octave startup file: <code>vim ~/.octaverc</code> and add the line <code>setenv GNUTERM x11</code>.</p>
+
+<p>7.Open Octave just run <code>octave</code>, if you want to change the look of your Octave, just input <code>PS1('&gt;&gt; ')</code></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">octave:<span class="m">1</span><span class="p">&gt;</span>
+</span><span class="line">octave:<span class="m">1</span><span class="p">&gt;</span> PS1<span class="p">(</span><span class="s1">&#39;&gt;&gt; &#39;</span><span class="p">)</span>
+</span><span class="line"><span class="p">&gt;&gt;</span>
+</span><span class="line"><span class="p">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<!--more-->
+
+<p><em>Reference: <a href="http://jatinganhotra.com/blog/2014/01/21/installing-octave-on-os-x-10-dot-9-mavericks/">http://jatinganhotra.com/blog/2014/01/21/installing-octave-on-os-x-10-dot-9-mavericks/</a></em></p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/07/13/install_octave/">https://sumnous.github.io/blog/2014/07/13/install_octave/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[a one and a two 《一一》]]></title>
+    <link href="https://sumnous.github.io/blog/2014/07/05/a-one-and-a-two/"/>
+    <updated>2014-07-05T11:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/07/05/a-one-and-a-two</id>
+    <content type="html"><![CDATA[<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p2119675128.jpg" /></center>
+
+<p>173分钟，却好似经历了人生的缩影，幼儿的洋洋，青少年的婷婷、莉莉、胖子，中年人的NJ，敏敏，阿弟，阿弟媳妇，阿瑞，蒋妈，云云，大田，还有NJ的老板，老年人的婆婆。</p>
+
+<p>很多镜头平静却无法忘却，婆婆去世时婷婷手中的折纸，大田吹着口哨玩着鸟，洋洋跳进游泳池，胖子从旅馆中跑掉婷婷落寞又坚强的走在马路上，阿弟孩子满月闹剧NJ呆呆的又很镇静的站在门口，日本宾馆中阿瑞放声大哭映在玻璃上的影子。。。</p>
+
+<p>就像人生的回放，平淡而忧伤。</p>
+
+<p>就像NJ说的，人生虽然有很多遗憾，以为重活一次一定会不一样，可结果其实差不多，可再活一次真的没有那个必要了。如果带着记忆让我再活一次，我想我一定不会了，人生太累，过去就过去了，那些遗憾，那些错过，才是我们始终念念不忘的，记性好的人太痛苦，所以还是不要再回去了。</p>
+
+<p>可能大田算活得明白的一个，站的高的人，思想境界高的人，可能看这个世界真的是不一样的，他们都在做自己感兴趣可能别人却不理解的事情。</p>
+
+<p>还有洋洋，你们看不到的，我拍给你们看，还有他在片尾终于肯对已经过世的婆婆说的那段话，“我好想你。尤其是当我看到那个，还没有名字的小表弟，就会想起你常跟我说：你老了。我很想跟他说我觉得……我也老了。” </p>
+
+<p>也许在一年前我不会喜欢这种又长又慢又无聊的电影，可如今看起来却好像我活在了这个电影里，想哭，想笑，却又无奈。</p>
+
+<p>就像豆瓣上某篇影评的的题目那样，年华一帧一帧的逝去。</p>
+
+<p>岁月静好。</p>
+
+<!--more-->
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p835646285.jpg" /></center>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p2026807998.jpg" /></center>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p1820240442.jpg" /></center>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p455438296.jpg" /></center>
+
+<h5 id="centercenter"><center>婆婆</center></h5>
+
+<h5 id="centercenter-1"><center>为什么这个世界和我们想的</center></h5>
+
+<h5 id="centercenter-2"><center>都不一样呢？</center></h5>
+
+<h5 id="centercenter-3"><center>你现在醒过来</center></h5>
+
+<h5 id="centercenter-4"><center>又看到它</center></h5>
+
+<h5 id="centercenter-5"><center>还会有这样的感受吗？</center></h5>
+
+<h5 id="centercenter-6"><center>我现在</center></h5>
+
+<h5 id="centercenter-7"><center>闭上眼睛</center></h5>
+
+<h5 id="centercenter-8"><center>看到的世界</center></h5>
+
+<h5 id="centercenter-9"><center>好美</center></h5>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/07/05/a-one-and-a-two/">https://sumnous.github.io/blog/2014/07/05/a-one-and-a-two/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[最近的面试经历-百度，搜狗，腾讯滴滴打车，豆瓣]]></title>
+    <link href="https://sumnous.github.io/blog/2014/06/08/interview_sumnous/"/>
+    <updated>2014-06-08T22:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/06/08/interview_sumnous</id>
+    <content type="html"><![CDATA[<p>我的简历背景是主要做社区发现算法，之前做同构网络的社区发现算法，现在做异构网络的（学术网络为例），每位面试官都会让我介绍我做的内容。我写了图像处理的经历，百度和滴滴的面试官对这一经历很感兴趣。</p>
+
+<h3 id="section">百度</h3>
+
+<p>职位是机器学习。</p>
+
+<p>第一面：</p>
+
+<p>介绍我的社区发现论文，并给出论文中我认为创新的地方。我说了三点。</p>
+
+<p>另外：</p>
+
+<ol>
+  <li>
+    <p>如何帮助超市定特价商品。</p>
+  </li>
+  <li>
+    <p>一个黑盒里是一个图，结构未知，只知道点的个数是n，边的个数是m，写公式给出两个点相连的概率。</p>
+  </li>
+</ol>
+
+<p>第二面：（女面试官！）</p>
+
+<p>写代码：给一个文档，以及stopwords，统计除掉停用词之后的词频统计。</p>
+
+<p>之后问到给一个查询query，如何匹配相应地文档。</p>
+
+<p>由于当时并不知道TF-IDF，向量空间模型（VSM），以及sphinx全文检索技术这一块，这一面减分很多。其实之后看了下资料，比较简单。</p>
+
+<p>第三面：</p>
+
+<p>隔了一周部门的leader面的。问得跟项目相关。给我提得建议是系统学习下机器学习，这样再做数据挖掘的时候会有更好的全局观。虽悲剧但受教。</p>
+
+<p>一道概率题，54张牌，平均分成三堆，大小王在同一堆的概率？（17/53）</p>
+
+<h3 id="section-1">搜狗</h3>
+
+<!--more-->
+
+<p>职位是数据挖掘算法工程师。笔试题，有选择20+，包括单选、多选，填空3道，编程题两道。涉及范围很广，是精心设计的题目。</p>
+
+<p>涉及到的内容，聚类算法，互信息，频繁项挖掘算法，分类算法，树的前中后序遍历。很基础的选择题。我遇到的面试官在做完之后跟我一起过了一遍。问我会不会Hadoop，然后我说用得少。</p>
+
+<p>能记得的选择题：</p>
+
+<p>买饮料，三个瓶盖可以换一瓶，请问要买100瓶饮料，最少需要买多少瓶？（67）</p>
+
+<p>填空题：</p>
+
+<p>10个试管，两种液体，A是好液体，B是坏液体，只有一个试管里是B，且A、B混合会发生反应，判断哪个试管里是坏液体，至少需要多少个试管？（4，二进制）</p>
+
+<p>编程题：</p>
+
+<ol>
+  <li>
+    <p>已知随机数生成函数f()，返回0的概率是60%，返回1的概率是40%。根据f()求随机数函数g()，使返回0和1的概率是50%，不能用已有的随机生成库函数。<a href="http://sumnous.github.io/blog/2014/05/13/random-pick-function/">我整理的答案</a></p>
+  </li>
+  <li>
+    <p>给你一个数组A[1..n]，请你在O(n)的时间里构造一个新的数组B[1..n]，使得B[i]=A[1] * A[2] * … * A[n] / A[i]。你不能使用除法运算。<a href="http://www.ituring.com.cn/article/49302">分析可参考</a></p>
+  </li>
+</ol>
+
+<h3 id="section-2">腾讯滴滴打车</h3>
+
+<p>职位是算法工程师。滴滴的面试官和我都非常敬业的从上午11点面到下午2点，都么有吃饭，555。。。去之前专门找做地理位置算法的同学给我科普了他们做的路径规划算法和基于社交的location推荐系统，所以面试的开放性问题都答得很好。</p>
+
+<p>第一面：</p>
+
+<p>要求介绍K-means算法，并给出找起始点的策略。</p>
+
+<p>开放性问题：给用户推荐一定距离内他可能去的餐馆，请给出算法策略。我想的是已知距离和餐馆的访问次数，套用TF-IDF模型。</p>
+
+<p>写代码：两个字符串，判断一个字符串是否是另一个字符串的子串，并返回子串的起始位置。</p>
+
+<p>第二面：</p>
+
+<p>什么样的数据结构可以满足多次插入删除，取最小数，给出时间复杂度。我的回答是小顶堆，建立小顶堆的时间复杂度是O(nlogn)，之后每次插入删除的时间复杂度是O(logn)。</p>
+
+<p>写代码：链表逆序。（练了很多遍，写得非常顺利）</p>
+
+<p>开放性问题：已知每天的呼叫订单，在线司机，和成交订单记录，如何判断异常数据。我的回答是用卷积函数来检测异常。（实际可能他们真会用到卷积）看到我做过图像处理就问了我傅里叶变换，我说我不记得了。。。</p>
+
+<p>描述Dijkstra最短路径算法。（去滴滴面试之前专门复习了这个算法，讲得很顺利）</p>
+
+<p>问了一个超有意思的智力题：</p>
+
+<p>100个人排队，每个人只能看到自己之前的人的帽子的颜色（假设只有黑白两色），每个人都得猜自己帽子的颜色，只能说一次，说错就死掉，别人可以听到之前的人的答案以及是否死掉。请问用什么策略说死掉的人最少。</p>
+
+<p>我的回答是看哪个颜色的多就说哪个颜色。后来就想不出来了。</p>
+
+<p>接着面试官简单介绍了一下他们目前的工作。然后问我有没有问题问他。然后我恳求他告诉我这道题的答案。他说了他的策略。</p>
+
+<p>假设只有3个人，假设ture = 白，false = 黑，用这个公式x3 = (x1 == x2)，用人话就是1和2的帽子颜色一样的话就说白，不一样的话就说黑。这个策略第一个人死的概率是1/2，剩下的两个都不会死。</p>
+
+<p>他让我推广到4个人，也就是x4 = (x3 == (x1 == x2))，照理可以推广到100人。但问题就是人很难判断，只能靠计算机来算。</p>
+
+<p>网友提供了一个解题方法：“最后一个人看一下前面黑帽子的个数是奇数还是偶数，比如约定奇数说黑，偶数说白。这样前面的人都可以推断出来正确的结果。”</p>
+
+<h3 id="section-3">豆瓣</h3>
+
+<p>职位是算法工程师。豆瓣的面试官会看我的Github和豆瓣主页，这点是其他公司没有的。豆瓣的面试官对我的社交网络研究非常感兴趣，他们说他们在这一块的尝试一直没成功。</p>
+
+<p>第一面：</p>
+
+<p>主要介绍我做的社区发现的课题，他们对这个比较感兴趣。豆瓣主要在做的东西是user-profile的建立，以及用户的兴趣匹配。提到了LDA，聚类算法。</p>
+
+<p>第二面：</p>
+
+<p>开放性问题：请给出给用户推荐他感兴趣的内容的算法策略。我的回答结合社交网络分析的推荐：第一种，用话题模型计算用户的兴趣分布，并找到该兴趣下的top-n，总体兴趣下排序再取top-n。第二种，通过用户友邻的兴趣来推荐。第三种，先社区划分，利用社区内用户的兴趣做推荐。</p>
+
+<p>写了一段代码，二叉树，判断一个二叉树是否是另一个二叉树的子树。我写的是先比较根节点，再比较左孩子和右孩子。面试官提示我这道题更好地解法是递归比较，先比较根节点，不同的话递归比较左子树和右子树。</p>
+
+<p>问了一个机器学习的问题，关于线性回归和梯度下降。让我对线性回归的公式求导。</p>
+
+<h4 id="leetcode-careercup-ps3">总结一下，Leetcode, careercup（中文书《程序员面试金典 第五版》）的题还是要刷的，另外，面试之前最好针对这个公司的主要业务还有可能用到的技术、算法做些调研、准备，这样会跟面试官聊得很愉快。P.S.每次都是3个小时的面试，真的是体力活，容易头疼，得吃饱饭再去！！！</h4>
+
+<p><em><a href="http:weibo.com/sumno">sumnous</a></em></p>
+
+<p><em>写于2014.05.23</em></p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/06/08/interview_sumnous/">https://sumnous.github.io/blog/2014/06/08/interview_sumnous/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[随机数生成函数面试题]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/13/random-pick-function/"/>
+    <updated>2014-05-13T16:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/13/random-pick-function</id>
+    <content type="html"><![CDATA[<p>前阵子去某公司笔试，有道题是</p>
+
+<blockquote>
+  <p>已知随机数生成函数f()，返回0的概率是60%，返回1的概率是40%。根据f()求随机数函数g()，使返回0和1的概率是50%，不能用已有的随机生成库函数。</p>
+</blockquote>
+
+<p>分析：</p>
+
+<p>调用f()两次即可，会出现4种结果(0,0), (0,1), (1,0), (1,1)，其中出现(0,1), (1,0)的概率是一样的，可以构造出等概率事件，比如出现(0,1)可返回0，出现(1,0)可返回1，如果出现其他两种情况则舍掉重新调用。</p>
+
+<p>代码如下：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">g</span><span class="p">():</span>
+</span><span class="line">    <span class="k">while</span><span class="p">(</span><span class="n">true</span><span class="p">):</span>
+</span><span class="line">        <span class="n">a</span> <span class="o">=</span> <span class="n">f</span><span class="p">()</span>
+</span><span class="line">        <span class="n">b</span> <span class="o">=</span> <span class="n">f</span><span class="p">()</span>
+</span><span class="line">        <span class="k">if</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class="line">            <span class="k">return</span> <span class="mi">0</span>
+</span><span class="line">        <span class="k">if</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+</span><span class="line">            <span class="k">return</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>这道笔试题到此为止。</p>
+
+<p>接下来扩展一下，<em>如何实现这个随机数生成函数f()，可用random()，也就是以指定概率获取元素</em>。《Python Cookbook》中有此示例。分析一下，也就是在(0, 0.6]区间内取0，在(0.6, 1]区间内取1。扩展到多个数也一样。</p>
+
+<!--more-->
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">withProbRandomPick</span><span class="p">(</span><span class="n">probList</span><span class="p">):</span>
+</span><span class="line">    <span class="kn">import</span> <span class="nn">random</span>
+</span><span class="line">    <span class="kn">import</span> <span class="nn">sys</span>
+</span><span class="line">    <span class="n">r</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="mi">0</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">probList</span><span class="p">:</span>
+</span><span class="line">        <span class="n">s</span> <span class="o">+=</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line">    	<span class="k">if</span> <span class="n">s</span> <span class="o">&gt;=</span> <span class="n">r</span><span class="p">:</span>
+</span><span class="line">    	    <span class="k">return</span> <span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line">    <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Error: shouldn&#39;t get here&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>验证一下：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">probList</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]]</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">collections</span>
+</span><span class="line"><span class="n">count</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</span><span class="line"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">10000</span><span class="p">):</span>
+</span><span class="line">    <span class="n">count</span><span class="p">[</span><span class="n">withProbRandomPick</span><span class="p">(</span><span class="n">probList</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class="line"><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">count</span><span class="p">:</span>
+</span><span class="line">    <span class="k">print</span> <span class="n">n</span><span class="p">,</span> <span class="n">count</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="mf">10000.0</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>得到的结果是：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="mi">0</span> <span class="mf">0.5953</span>
+</span><span class="line"><span class="mi">1</span> <span class="mf">0.4047</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>《程序员面试金典第5版》(Cracking the Coding Interview)中也有一道给定一个随机数函数生成另一个随机数函数的题目。</p>
+
+<blockquote>
+  <p>给定rand5()，实现一个方法rand7()。也即，给定一个产生0到4（含）随机数方法，编写一个产生0到6（含）随机数的方法。（第105页）</p>
+</blockquote>
+
+<p>分析：随机数函数的关键是确保产生每一个数的的概率相等。我们可用通过5 * rand5() + rand5()产生[0:24]，舍弃[21:24]，最后除以7取余数，则可得到概率相等的[0:6]的数值。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">rand7</span><span class="p">():</span>
+</span><span class="line">    <span class="k">while</span><span class="p">(</span><span class="n">true</span><span class="p">):</span>
+</span><span class="line">        <span class="n">num</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">rand5</span><span class="p">()</span> <span class="o">+</span> <span class="n">rand5</span><span class="p">()</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">21</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="n">num</span> <span class="o">%</span> <span class="mi">7</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>变形一下，给定rand7()，如何实现rand5()？</p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/13/random-pick-function/">https://sumnous.github.io/blog/2014/05/13/random-pick-function/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress build blog on Github 个人建站实录]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/11/octopress-build-blog-on-github/"/>
+    <updated>2014-05-11T16:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/11/octopress-build-blog-on-github</id>
+    <content type="html"><![CDATA[<p>为什么选择Octopress：静态+Markdown+Git提交+不需要服务器+有基础的话折腾1-2个小时就能看到效果（这些都是我喜欢的）</p>
+
+<p>这篇<a href="http://jackycode.github.io/blog/2014/02/23/record/">《记录：Octopress建站之旅》</a>很易上手，有篇易懂易follow的教程是好的开始~(多亏池大 <a href="http://weibo.com/idreamland">@池建强</a> 分享了 <a href="http://weibo.com/jackycode">@Jacky130</a> 的博客，我才看到了这篇文章，才想自己动手来做这件事情)</p>
+
+<h3 id="gitruby">1. 首先安装Git和Ruby，检查是否安装好</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git --version
+</span><span class="line">ruby --version</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="octopressoctopress">2. 安装Octopress到本地，之后的所有操作都在octopress文件下</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git clone git://github.com/imathis/octopress.git octopress
+</span><span class="line">cd octopress
+</span><span class="line">gem install bundler
+</span><span class="line">rbenv rehash
+</span><span class="line">bundle install</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>可能会有权限问题，请加sudo。在执行<code>rbenv rehash</code>的时候系统提示我没有此命令，于是参考<a href="http://jianshu.io/p/ACs3kA">这里</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">git clone https://github.com/sstephenson/rbenv.git ~/.rbenv</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>将$PATH写入~/.bash_profile，也可以参考<a href="https://github.com/sstephenson/rbenv#basic-github-checkout">rbenv的git页面</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">export RBENV_ROOT="${HOME}/.rbenv"
+</span><span class="line">if [ -d "${RBENV_ROOT}" ]; then
+</span><span class="line">  export PATH="${RBENV_ROOT}/bin:${PATH}"
+</span><span class="line">  eval "$(rbenv init -)"
+</span><span class="line">fi</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>检查rbenv是否可用<code>rbenv -v</code>。<code>rbenv rehash</code>这条命令，每当切换 ruby 版本和执行 bundle install 之后必须执行这个命令。</p>
+
+<h3 id="section">3. 安装主题</h3>
+
+<!--more-->
+
+<p>安装默认主题：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">rake install
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>我选的是<a href="https://github.com/gehaxelt/CSS-WhiteLake">WhiteLake</a>，也可以在<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">这里</a>选别的第三方主题。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">git clone https://github.com/gehaxelt/CSS-WhiteLake.git .themes/whitelake
+</span><span class="line">rake install<span class="o">[</span><span class="s1">&#39;whitelake&#39;</span><span class="o">]</span>
+</span><span class="line">rake generate
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="github">4. 在github上部署博客</h3>
+
+<p>首先有一个Github账户，创建一个repository，命名为yourGithubName.github.io</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">rake setup_github_pages <span class="c">#input your repository&#39;s url</span>
+</span><span class="line">rake generate
+</span><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>提交source：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">git add .
+</span><span class="line">git commit -am <span class="s2">&quot;this commit&#39;s content&quot;</span>
+</span><span class="line">git push origin <span class="nb">source</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="octopress">5. 配置Octopress</h3>
+
+<p><code>_config.yml</code>文件是今后要多次涉及到的重要配置文件，基本上安装的插件都会出现在这个文件中，可以通过更改true或者false来启用或者关闭，分为3部分：</p>
+
+<ul>
+  <li>
+    <p>main configs		设置博客的名字等等</p>
+  </li>
+  <li>
+    <p>Jekyll &amp; Plugins		设置侧边栏，每页显示几篇博客，最近的博客显示几篇，read on等等</p>
+  </li>
+  <li>
+    <p>3rd Party Settings		社会化工具，Github repositories，Twitter，Facebook，Disqus Comments，Google Analytics等等		</p>
+  </li>
+</ul>
+
+<h4 id="section-1">增加页面</h4>
+
+<p>比如增加一个About的页面，修改<code>source/_includes/custom/</code>下的<code>navigation.html</code>文件。添加一条语句，并注意要更改About页面的url为<code>yourblogurl/about</code>，增加其他页面也同理，接下来真正的创建页面：</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">rake new_page<span class="o">[</span>about<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>将你想写的内容写在刚生成的<code>source/about/index.markdown</code>中，记得提交配置。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">rake generate
+</span><span class="line">git add .
+</span><span class="line">git commit -am <span class="s2">&quot;config&quot;</span>
+</span><span class="line">git push origin <span class="nb">source</span>
+</span><span class="line">rake preview <span class="c">#http://localhost:4000</span>
+</span><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>至此，基本的配置已经完成了。</p>
+
+<h3 id="section-2">6. 发布新博客</h3>
+
+<p>将文章命名为“YYYY-MM-DD-post-title.markdown”，也可使用</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">rake new_post<span class="o">[</span><span class="s2">&quot;title&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>帮你生成<code>source/_posts/YYYY-MM-DD-title.markdown</code>文件，写博文，然后提交。</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line">rake generate
+</span><span class="line">git add .
+</span><span class="line">git commit -am <span class="s2">&quot;message&quot;</span>
+</span><span class="line">git push origin <span class="nb">source</span>
+</span><span class="line">rake preview <span class="c">#http://localhost:4000</span>
+</span><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>关于“删除文章”，我总认为这有个小bug，只要文章的名字是命名规则的格式，即使不commit也会出现在博客上，很厌烦，一般直接删除markdown文件就好，为了避免未写完的文章出现在博客上，请写完博文再改名字，然后再提交。</p>
+
+<p>基本上就这样了，剩下的想美化或者想增加功能啊等个性化设置可以继续探索。</p>
+
+<h3 id="some-tips">7. Some Tips</h3>
+
+<h4 id="section-3">代码高亮</h4>
+
+<p>使用<strong>pygments</strong>插件，可以支持N多种语言，语法超简单(只需在代码引用符号后添加语言的名字，就会自动配色)，可以看下这个兄弟的<a href="http://jinlong.github.io/blog/2013/03/30/octopress-syntax-highlight/">探索吐槽</a></p>
+
+<p>需装python, ruby, rubypython</p>
+
+<p>修改<code>_config.yml</code>中，Jekyll &amp; Plugins的pygments项，从false改为true。</p>
+
+<h4 id="octopresshttpbiaobiaoqimeblog20130710decorate-octopress">这位仁兄的<a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/">Octopress各种配置</a>写得很详细，可供参考</h4>
+
+<h4 id="section-4">可以继续添加的东东</h4>
+
+<p>各种统计，tags，最新评论，返回顶部按钮，weiboshow，douban展示，原文链接以及版权信息等等</p>
+
+<h4 id="macmarkdownmouhttpmouappcom">推荐Mac上的Markdown写作工具<a href="http://mouapp.com/">MOU</a>，界面很简单清新，可以支持数学公式。</h4>
+
+<blockquote>
+  <p>主要参考链接: </p>
+
+  <ol>
+    <li><a href="http://jackycode.github.io/blog/2014/02/23/record/">http://jackycode.github.io/blog/2014/02/23/record/</a></li>
+    <li><a href="http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress">http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress</a></li>
+    <li><a href="http://cn.soulmachine.me//blog/20130402/">http://cn.soulmachine.me//blog/20130402/</a></li>
+    <li><a href="http://812lcl.com/blog/categories/octopress/">http://812lcl.com/blog/categories/octopress/</a></li>
+  </ol>
+</blockquote>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/11/octopress-build-blog-on-github/">https://sumnous.github.io/blog/2014/05/11/octopress-build-blog-on-github/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[Leetcode] Valid Parentheses @Python]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python/"/>
+    <updated>2014-05-10T14:21:48+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python</id>
+    <content type="html"><![CDATA[<p><a href="http://oj.leetcode.com/problems/valid-parentheses/">Problem</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class="line">    <span class="c"># @return a boolean</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">isValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="bp">True</span>
+</span><span class="line">        <span class="n">left</span> <span class="o">=</span> <span class="s">&#39;([{&#39;</span>
+</span><span class="line">        <span class="n">right</span> <span class="o">=</span> <span class="s">&#39;)]}&#39;</span>
+</span><span class="line">        <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+</span><span class="line">            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="s">&#39;(&#39;</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="s">&#39;[&#39;</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="s">&#39;{&#39;</span><span class="p">:</span>
+</span><span class="line">                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span class="line">                <span class="k">continue</span>
+</span><span class="line">            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+</span><span class="line">                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+</span><span class="line">                    <span class="k">if</span> <span class="ow">not</span> <span class="n">stack</span> <span class="ow">or</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">left</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span>
+</span><span class="line">                        <span class="k">return</span> <span class="bp">False</span>
+</span><span class="line">                    <span class="k">else</span><span class="p">:</span>
+</span><span class="line">                        <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">                        <span class="k">continue</span>
+</span><span class="line">        <span class="k">return</span> <span class="ow">not</span> <span class="n">stack</span>
+</span><span class="line"><span class="c"># test</span>
+</span><span class="line"><span class="n">s</span> <span class="o">=</span> <span class="n">Solution</span><span class="p">()</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">isValid</span><span class="p">(</span><span class="s">&#39;()&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python/">https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[Leetcode] Longest Valid Parentheses @Python]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python/"/>
+    <updated>2014-05-10T14:17:58+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python</id>
+    <content type="html"><![CDATA[<p><a href="http://oj.leetcode.com/problems/longest-valid-parentheses/">Problem</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class="line">    <span class="c"># @param s, a string</span>
+</span><span class="line">    <span class="c"># @return an integer</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">longestValidParentheses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;(&#39;</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;)&#39;</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="mi">0</span>
+</span><span class="line">        <span class="n">stack</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;)&#39;</span><span class="p">)]</span>
+</span><span class="line">        <span class="n">maxLen</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+</span><span class="line">            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;)&#39;</span> <span class="ow">and</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;(&#39;</span><span class="p">:</span>
+</span><span class="line">                <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">                <span class="n">maxLen</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxLen</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</span><span class="line">            <span class="k">else</span><span class="p">:</span>
+</span><span class="line">                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">maxLen</span>
+</span><span class="line"><span class="c">#test</span>
+</span><span class="line"><span class="n">s</span> <span class="o">=</span> <span class="n">Solution</span><span class="p">()</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">longestValidParentheses</span><span class="p">(</span><span class="s">&quot;()(()&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">longestValidParentheses</span><span class="p">(</span><span class="s">&#39;(()()&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">longestValidParentheses</span><span class="p">(</span><span class="s">&#39;)()())&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python/">https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[Leetcode] Edit Distance @Python]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python/"/>
+    <updated>2014-05-10T10:06:08+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python</id>
+    <content type="html"><![CDATA[<p><a href="http://oj.leetcode.com/problems/edit-distance/">Problem</a></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class="line">    <span class="c"># @return an integer</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">minDistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word1</span><span class="p">,</span> <span class="n">word2</span><span class="p">):</span>
+</span><span class="line">        <span class="n">len1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word1</span><span class="p">)</span>
+</span><span class="line">        <span class="n">len2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word2</span><span class="p">)</span>
+</span><span class="line">        <span class="n">dp</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len2</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len1</span> <span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len1</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">            <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">len2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">            <span class="n">dp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">len1</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">len2</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line">                <span class="k">if</span> <span class="n">word1</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">word2</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class="line">                    <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line">                <span class="k">else</span><span class="p">:</span>
+</span><span class="line">                    <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">dp</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">dp</span><span class="p">[</span><span class="n">len1</span><span class="p">][</span><span class="n">len2</span><span class="p">]</span>	
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python/">https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DBLP数据集SQL导入]]></title>
+    <link href="https://sumnous.github.io/blog/2013/12/02/dblp-sql/"/>
+    <updated>2013-12-02T16:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2013/12/02/dblp-sql</id>
+    <content type="html"><![CDATA[<h3 id="dblp">1. 创建数据库DBLP：</h3>
+
+<p><code>show databases; </code></p>
+
+<p><code>create database dblp;</code></p>
+
+<p><code>use dblp;</code></p>
+
+<p>导入数据库：</p>
+
+<p><code>mysql -u root -p dblp &lt;  /Users/ting/workspace/datasets/dblp.sql </code></p>
+
+<p><strong>CODE: <a href="https://github.com/sumnous/DBLP-parser">DBLP-parser</a></strong></p>
+
+<p>三个表：</p>
+
+<p>authors: pid, author</p>
+
+<p>papers: pid, title, year, conference, abstract</p>
+
+<p>cites: pid,cid</p>
+
+<p><code>show tables;</code></p>
+
+<!--more-->
+
+<p>test：</p>
+
+<p><code>select count(*) from papers;</code>     看导入论文总个数</p>
+
+<p><code>select * from authors limit 10;</code>  </p>
+
+<p><code>select * from cites limit 10;</code></p>
+
+<p><code>select * from papers limit 10;</code></p>
+
+<p><code>select pid, title, year from papers limit 10; </code></p>
+
+<p><code>select * from authors limit 100000,10;</code> 从100000开始10个作者  </p>
+
+<p>看表的结构：</p>
+
+<p><code>desc papers;</code></p>
+
+<p><code>desc authors;</code></p>
+
+<p><code>desc cites;</code></p>
+
+<p>查看表是否有索引：</p>
+
+<p><code>show index from authors;</code></p>
+
+<p>创建表中列的索引：</p>
+
+<p><code>create index pid_index on authors(pid);</code></p>
+
+<p><code>create index pid_index on cites(pid);</code></p>
+
+<p><code>create index cid_index on cites(cid);</code></p>
+
+<p><code>create index pid_index on papers(pid);</code> </p>
+
+<p>group：</p>
+
+<p><code>select pid, group_concat(author) from authors group by pid limit 100;</code></p>
+
+<p>删除pid中的”index”:</p>
+
+<p>尝试</p>
+
+<p><code>select left(pid, 5) from cites limit 10;</code>     <code>select substr(pid, 1,5) from cites limit 10;</code></p>
+
+<p><code>select substr(pid, 6) from cites limit 10;</code></p>
+
+<p>更新pid:</p>
+
+<p><code>update cites set pid = substr(pid, 6);</code></p>
+
+<p><code>update authors set pid = substr(pid, 6);</code></p>
+
+<p><code>update papers set pid = substr(pid, 6);</code>  </p>
+
+<p>更改pid数据类型：</p>
+
+<p><code>alter table authors modify pid int(32);</code></p>
+
+<p><code>alter table papers modify pid int(32);</code></p>
+
+<p><code>alter table cites modify pid int(32);</code></p>
+
+<p><code>alter table cites modify cid int(32);</code></p>
+
+<p>debug: <code>delete from papers where title = "null";</code>删除title为空得论文 3个</p>
+
+<h3 id="coauthorship">2. 创建coauthorship表：</h3>
+
+<p><code>create table coauthorship select ta.pid, ta.author as author1, tb.author as author2 from authors as ta, authors as tb where ta.pid = tb.pid and ta.author &lt; tb.author; </code></p>
+
+<p><code>create index pid_index on coauthorship(pid);</code></p>
+
+<p><code>select pid, count(*) as count from coauthorship group by pid limit 100;</code></p>
+
+<p><code>create index author1_index on coauthorship(author1);</code></p>
+
+<p><code>create index author2_index on coauthorship(author2);</code></p>
+
+<p>更改author数据类型的长度：</p>
+
+<p><code>select max(length(author1)) from coauthorship;</code></p>
+
+<p><code>select author1, length(author1) from coauthorship order by length(author1) desc limit 100;</code></p>
+
+<p><code>select distinct author1, length(author1) from coauthorship order by length(author1) desc limit 100;</code></p>
+
+<p><code>select max(length(author)) from authors;</code></p>
+
+<p><code>alter table authors modify author varchar(100);</code></p>
+
+<p><code>alter table coauthorship modify author1 varchar(100);</code>   </p>
+
+<h3 id="coauthorweight">3. 创建coauthorweight表，两个作者共同合作多少篇文章：</h3>
+
+<p><code>create table coauthorweight select author1, author2, count(*) as weight from coauthorship group by author1, author2;</code></p>
+
+<p>test:</p>
+
+<p><code>select * from coauthorweight order by weight desc limit 40;</code></p>
+
+<p><code>select * from coauthorweight where author1 = "Guoliang Li" order by weight desc;</code></p>
+
+<p><code>select * from coauthorweight where author1 = "Guoliang Li" or author2 = "Guoliang LI" order by weight desc;</code> </p>
+
+<p><code>select * from authors, papers where author = "Guoliang Li" and authors.pid = papers.pid;</code></p>
+
+<p><code>select authors.author, papers.title, papers.year, papers.conference from authors, papers where author = "Guoliang Li" and authors.pid = papers.pid;</code>  </p>
+
+<h3 id="authorcount">4. 创建author_count表，每个作者发表的文章数：</h3>
+
+<p><code>create table author_count select author, count(*) as number from authors group by authors;</code> </p>
+
+<p>创建author-papercount</p>
+
+<p><code>create index author_index on authors(author);</code> </p>
+
+<p><code>create table author_count select author, count(*) as number from authors group by author;</code> </p>
+
+<p>test：</p>
+
+<p><code>select * from author_count where author = "Guoliang Li";</code></p>
+
+<p><code>select * from author_count order by number desc limit 10;</code></p>
+
+<p>导出txt</p>
+
+<p><code>select * from authors limit 10 into outfile "authors.txt”;</code></p>
+
+<p>找到文件存放位置</p>
+
+<p><code>show variables like "%dir%";</code>  </p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2013/12/02/dblp-sql/">https://sumnous.github.io/blog/2013/12/02/dblp-sql/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A review of overlapping commuity detection algorithms]]></title>
+    <link href="https://sumnous.github.io/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms/"/>
+    <updated>2013-09-16T16:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms</id>
+    <content type="html"><![CDATA[<h2 id="overlapping-community-detection">Overlapping Community Detection</h2>
+
+<blockquote>
+  <p><a href="http://arxiv.org/abs/1110.5813">Overlapping Community Detection in Networks : the State of the Art and Comparative Study</a></p>
+</blockquote>
+
+<blockquote>
+  <p><a href="http://arxiv.org/abs/0908.1062">Community detection algorithms: a comparative analysis</a></p>
+</blockquote>
+
+<h3 id="old-method">0 OLD METHOD</h3>
+
+<ul>
+  <li>
+    <p>Clustering</p>
+  </li>
+  <li>
+    <p>Graph Cut</p>
+  </li>
+  <li>
+    <p>Modularity-Based Method(is NP-hard to optimize) <a href="http://arxiv.org/pdf/physics/0602124.pdf">[Newman, 2006]</a></p>
+
+    <center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/modularity.png" /></center>
+
+    <ul>
+      <li>
+        <p>Greedy</p>
+      </li>
+      <li>
+        <p>Simulated Annealing</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Girvan-Newman Algorithm (Betweenness, split)</p>
+  </li>
+  <li>
+    <p>Spectral Method</p>
+  </li>
+</ul>
+
+<!--more-->
+
+<h3 id="clique-percolation">1 Clique Percolation</h3>
+
+<h4 id="cpm-clique-percolation-method">CPM (Clique Percolation Method)</h4>
+
+<ul>
+  <li>
+    <p>Indentify all the k-cliques in network. <em>Clique</em> is an intensively structure, each two nodes are connected in a clique. Connect two nodes if their two k-cliques they belong to share k-1 members. [<a href="http://www.nature.com/nature/journal/v435/n7043/full/nature03607.html">Palla, 2005, Nature</a>]</p>
+  </li>
+  <li>
+    <p>Implementation: <a href="http://www.cfinder.org/">CFinder</a> (support directed and weighted graph)</p>
+  </li>
+  <li>
+    <p>Time Complexity: <strong>polynomial</strong> (NP-complete maximal cliques finding)</p>
+  </li>
+</ul>
+
+<h3 id="local-expansion-and-optimization">2 Local Expansion and Optimization</h3>
+
+<h4 id="lfm">LFM</h4>
+
+<ul>
+  <li>
+    <p>expands a community from a random seed node to form a natural community until fitness function is locally maximal. [<a href="http://arxiv.org/pdf/0802.1218.pdf">Lancichinetti, 2009, New J. Phys.</a>]</p>
+  </li>
+  <li>
+    <p>fitness function: </p>
+  </li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/fitness_function.png" /></center>
+
+<ul>
+  <li>
+    <p>where n<sub>c</sub> is the number of communities, s is the average size of communities.</p>
+  </li>
+  <li>
+    <p><strong>O(n<sub>c</sub>s<sup>2</sup>)</strong>, computation complexity is depended on parameter \alpha. </p>
+  </li>
+  <li>
+    <p>worst-case complexity: <strong>O(n<sup>2</sup>)</strong></p>
+  </li>
+</ul>
+
+<h4 id="gce-greedy-clique-expansion">GCE (Greedy Clique Expansion)</h4>
+
+<ul>
+  <li>
+    <p>takes all maximum cliques as initial seeds to greedily expand the fitness function to find overlapping communities. <a href="http://arxiv.org/abs/1002.1827">[Lee, 2010]</a></p>
+  </li>
+  <li>
+    <p><a href="https://sites.google.com/site/greedycliqueexpansion.">GCE Implementation</a></p>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>Greedy expansion complexity: **O(</td>
+          <td>E</td>
+          <td>M)** , M is the number of cliques to be expanded.</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>merge complexity: **O(2(</td>
+          <td>C1</td>
+          <td>+</td>
+          <td>C2</td>
+          <td>)-1)** (not sure)</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h4 id="oslom-order-statistics-local-optimization-methodimportant">OSLOM (Order Statistics Local Optimization Method)(IMPORTANT)</h4>
+
+<ul>
+  <li>optimizes locally the statistical significance information of a cluster with respect to random fluctuation with Extreme and Order Statistics. It tests the statistical significance of a cluster with respect to a global null model. It can deal with weighted, directed edges, overlapping communities, hierarchies and dynamic communities. <a href="http://oslom.org/oslom.pdf">[Lancichinetti, 2011]</a></li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/oslom.png" /></center>
+
+<ul>
+  <li>
+    <p>Implementation: <a href="http://www.oslom.org">www.oslom.org</a></p>
+  </li>
+  <li>
+    <p>worst-case complexity: <strong>O(n<sup>2</sup>)</strong></p>
+  </li>
+</ul>
+
+<h4 id="eagle">EAGLE</h4>
+
+<ul>
+  <li>
+    <p>All maximal cliques is as initial communities, merged by maximum similarity -&gt; dendrogram. The optimal cut on the dendrogram is determined by the extended modularity with a weight based on the number of overlapping memberships. <a href="http://arxiv.org/pdf/0810.3093.pdf">[Shen, 2008]</a> <a href="http://code.google.com/p/eaglepp/">[code]</a></p>
+  </li>
+  <li>
+    <p>Extended Modularity: </p>
+  </li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/extended_modularity.png" /></center>
+
+<ul>
+  <li>
+    <p>where O<sub>i</sub> is the number of communities to which node i belongs.</p>
+  </li>
+  <li>
+    <p><strong>O(n<sup>2</sup>+(h+n)s)</strong>, where s is the number of maximal cliques, h is the number of pairs of maximal cliques which are neighbors. </p>
+  </li>
+</ul>
+
+<h3 id="mixturl-model-todo">3 Mixturl Model (TODO)</h3>
+
+<ul>
+  <li><a href="http://www.bradblock.com.s3-website-us-west-1.amazonaws.com/Mixture_models_and_exploratory_analysis_in_networks.pdf">[Newman, 2007]</a></li>
+  <li>GMM(Gaussian Mixture Model)</li>
+  <li>SBM(Stochastic block model)</li>
+  <li>NMF(Non-negativeMatrix Factorization)</li>
+</ul>
+
+<h3 id="label-propagation-algorithm-dynamical-algorithm">4 Label Propagation Algorithm (Dynamical Algorithm)</h3>
+
+<h4 id="copra">COPRA</h4>
+
+<ul>
+  <li>
+    <p><a href="http://arxiv.org/pdf/0910.5516.pdf">[Gregory,2010]</a></p>
+  </li>
+  <li>
+    <p><strong>O(vmlog(vm/n))</strong> per iteration, v controls the number of communities a node can belong to, m is the number of edges, n is the number of nodes. </p>
+  </li>
+</ul>
+
+<h4 id="slpaimportant-todo">SLPA(IMPORTANT TODO)</h4>
+
+<ul>
+  <li>
+    <p>is a general speaker-listener based information propagation process. <a href="http://arxiv.org/pdf/1202.2465.pdf">[Xie, 2011]</a></p>
+  </li>
+  <li>
+    <p><a href="https://sites.google.com/site/communitydetectionslpa/">code</a></p>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>**O(t</td>
+          <td>E</td>
+          <td>)**, linear, t is the predefined maximum number of iterations.</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h4 id="infomapimportant-todo">InfoMAP(IMPORTANT TODO)</h4>
+
+<ul>
+  <li>The map equation framework</li>
+</ul>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/map_equation.png" /></center>
+
+<ul>
+  <li>
+    <p><a href="http://www.mapequation.org/publications.html">papers</a></p>
+
+    <ul>
+      <li><a href="http://www.mapequation.org/assets/publications/EurPhysJ2010Rosvall.pdf">The Map Equation [Rosvall, 2009]</a></li>
+    </ul>
+  </li>
+  <li>
+    <p><a href="http://www.tp.umu.se/~rosvall/code.html">codes</a></p>
+  </li>
+</ul>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms/">https://sumnous.github.io/blog/2013/09/16/a-review-of-overlapping-community-detection-algorithms/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[论文学习笔记] ICDM12-Topic-aware Social Influence Propagation Models(话题感知社会影响力传播模型)]]></title>
+    <link href="https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/"/>
+    <updated>2013-09-04T17:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware Social Influence Propagation-Models</id>
+    <content type="html"><![CDATA[<blockquote>
+  <p>Barbieri, N., Bonchi, F., &amp; Manco, G. (2012, December). Topic-aware social influence propagation models. In Data Mining (ICDM), 2012 IEEE 12th International Conference on (pp. 81-90). IEEE.</p>
+</blockquote>
+
+<p>社交网络传播模型的共同特征：</p>
+
+<ol>
+  <li>用户成为活跃用户的可能性随着他的邻居中活跃用户的数量单调增加。</li>
+  <li>影响过程遵循Progressive规则，即用户只可能从非活跃受影响变成活跃，而不可能由活跃变成非活跃。</li>
+</ol>
+
+<p>Linear Threshold Model 线性阈值模型：是以接受者为中心的模型
+Independent Cascade Model 独立级联模型：是以发射者为中心的模型</p>
+
+<p>考虑时间延迟的模型(Continuous Time Delay Model)：在传统的IC，LT基础上引入连续时间延迟，也就是CTIC，CTLT。用于话题传播行为分析。</p>
+
+<p>目标问题：确定有影响力的用户（例如病毒式营销中）</p>
+
+<p>问题：离散对待的时间和大量参数（效率，可扩展行和过度拟合（过适，是指在调适一个统计模型时，使用过多参数。））</p>
+
+<p>观察：1）用户有不同的兴趣；2）物品有不同的特征；3）用户有可能喜欢相似的物品
+研究对象：物品特征，用户兴趣，社会影响</p>
+
+<!--more-->
+
+<p>本文贡献：</p>
+
+<ol>
+  <li>TIC和TLT</li>
+  <li>Expectation Maximization (EM) 估计TIC模型的参数</li>
+  <li>AIR (Authoritativeness-Interest-Relevance) 用户权威和话题兴趣取代user-to-user influence，减少参数</li>
+  <li>Generalized Expectation Maximization (GEM) 用来学习最大似然来估计AIR模型的参数</li>
+  <li>使传统的IC模型可预测所接受的特定物品</li>
+  <li>考虑物品特征</li>
+</ol>
+
+<p>在之前的topic-wise social influence加入Viral Marketing (病毒式营销) &amp; Influence Maximization方法</p>
+
+<p>σm(S) is monotone &amp; submodular （子模函数，随着加入集合的元素越多,  F 函数值获得的受益越少(效用边际递减)。）</p>
+
+<p>Influence maximization</p>
+
+<p>TIC (Topic-aware Independent Cascade Model)
+TLT (Topic-aware Linear Threshold Model)</p>
+
+<ol>
+  <li>
+    <p>learning parameters of TIC model using Expectation-Maximization method (Complete-Data Expectation Likelihood[14], or log-likelihood maximization)</p>
+  </li>
+  <li>
+    <p>加入新物品item</p>
+  </li>
+</ol>
+
+<p>AIR propagation model
+parameters:</p>
+
+<ol>
+  <li>authoritativeness of a user in a topic</li>
+  <li>interest of a user for a topic</li>
+  <li>relevance of an item for a topic</li>
+</ol>
+
+<p>principle: general threshold model [2]
+用selection scaling factors来控制时间衰变对信息传播的影响</p>
+
+<p>Influence Maximization in AIR: </p>
+
+<ul>
+  <li>Greedy</li>
+  <li>Top-k authorities</li>
+</ul>
+
+<p>存在的问题和可以改进的地方：</p>
+
+<ol>
+  <li>这篇文章只是一个网络，不是异构网络，可以考虑构成user,item,topic三个网络的异构网络</li>
+  <li>只考虑到影响，并没有考虑到同质（personal影响，不只是结构影响，有可能是节点的属性影响传播）和环境</li>
+  <li>权威模型并不代表真的有效，容易被影响的人才能决定网络中信息的传播</li>
+  <li>网络的update，这篇文章只有item的update，并未涉及user关系的update</li>
+</ol>
+
+<p>未来工作的难点：</p>
+
+<ol>
+  <li>加入点东西使得影响的人更多影响力更大（Influence Maximization）</li>
+  <li>改进模型使得计算速度更快</li>
+</ol>
+
+<blockquote>
+  <p>重要参考文献：
+<a href="http://pdf.aminer.org/000/472/900/maximizing_the_spread_of_influence_through_a_social_network.pdf">Kempe, D., Kleinberg, J., &amp; Tardos, É. (2003, August). Maximizing the spread of influence through a social network. In Proceedings of the ninth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 137-146). ACM.</a></p>
+</blockquote>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/">https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[解决Mac下Chrome浏览器用Goagent打开HTTPS网站SSL证书错误不受信任问题]]></title>
+    <link href="https://sumnous.github.io/blog/2013/08/28/Goagent-SSL-Error/"/>
+    <updated>2013-08-28T16:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2013/08/28/Goagent-SSL-Error</id>
+    <content type="html"><![CDATA[<p>mac下用goagent FQiang总是会遇到https信任问题，每次访问网站都得点，很烦人，搜了一下，这个解决方法比较好。</p>
+
+<p>打开［应用程序］&gt;［实用工具］&gt;［钥匙串访问］，并在左侧导航选择［系统］。</p>
+
+<p>选择顶部的［文件］&gt;［导入项目］，并定位到goagent安装目录的localCA.crt。选择导入。提示输入系统密码。</p>
+
+<p>双击新导入的GoAgent CA证书，展开［信任］选项，确保所有的选择都是［总是信任］。重启浏览器即可。</p>
+
+<p><a href="http://blog.netsh.org/posts/goagent-https-ssl-error_1013.netsh.html">windows下解决方案</a></p>
+
+<p><a href="http://blog.netsh.org/posts/mac-goagent-https-error_1443.netsh.html">mac、iOS下解决方案</a></p>
+
+<p>推荐mac下工具<strong>GoAgentX</strong>，参考<a href="http://iaiai.iteye.com/blog/1608369">教程</a></p>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2013/08/28/Goagent-SSL-Error/">https://sumnous.github.io/blog/2013/08/28/Goagent-SSL-Error/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Install PyCharm and JDK on Ubuntu 12.04]]></title>
+    <link href="https://sumnous.github.io/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04/"/>
+    <updated>2012-10-17T15:48:29+08:00</updated>
+    <id>https://sumnous.github.io/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04</id>
+    <content type="html"><![CDATA[<h3 id="installing-sun-jdk-7-on-ubuntu-1204">Installing Sun JDK 7 on Ubuntu 12.04:</h3>
+
+<ul>
+  <li>
+    <p>Download the sun jdk 7 tar file <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7u7-downloads-1836413.html">from here</a></p>
+  </li>
+  <li>
+    <p>Extract the tar file:</p>
+  </li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">tar</span> <span class="o">-</span><span class="n">xvzf</span> <span class="n">jdk</span><span class="o">-</span><span class="mi">7</span><span class="n">u4</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x64</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>Move extracted folder to this location:</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>Install new java source in system: </li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">install</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javac</span> <span class="n">javac</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javac</span> <span class="mi">1</span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">install</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">java</span> <span class="n">java</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">java</span> <span class="mi">1</span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">install</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javaws</span> <span class="n">javaws</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">javaws</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<!--more-->
+
+<ul>
+  <li>Choose default java:</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">config</span> <span class="n">javac</span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">config</span> <span class="n">java</span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">update</span><span class="o">-</span><span class="n">alternatives</span> <span class="o">--</span><span class="n">config</span> <span class="n">javaws</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>java version test:</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">java</span> <span class="o">-</span><span class="n">version</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>Verify the symlinks all point to the new java location:</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">ls</span> <span class="o">-</span><span class="n">la</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">alternatives</span><span class="o">/</span><span class="n">java</span><span class="o">*</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>Enable Java plugin for Mozilla Firefox (even for Chrome)</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c">#for 64-Bit jdk </span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">amd64</span><span class="o">/</span><span class="n">libnpjp2</span><span class="o">.</span><span class="n">so</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mozilla</span><span class="o">/</span><span class="n">plugins</span>
+</span><span class="line"><span class="c">#for 32-Bit jdk </span>
+</span><span class="line"><span class="err">$</span> <span class="n">sudo</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">jvm</span><span class="o">/</span><span class="n">jdk1</span><span class="o">.</span><span class="mf">7.0</span><span class="n">_04</span><span class="o">/</span><span class="n">jre</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">libnpjp2</span><span class="o">.</span><span class="n">so</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mozilla</span><span class="o">/</span><span class="n">plugins</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<ul>
+  <li>
+    <p>JAVA_HOME configuration:</p>
+
+    <p>Some tools require JAVA_HOME variable. You can set JAVA_HOME in Ubuntu so simple: Edit the file .bashrc under your home directory and add the following lines: (if .bashrc is hidden click in Nautilus Menu View &gt; Show Hidden Files)</p>
+  </li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">export</span> <span class="n">JAVA_HOME</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">your</span><span class="o">/</span><span class="n">jdk</span>
+</span><span class="line"><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="err">$</span><span class="n">JAVA_HOME</span><span class="o">/</span><span class="nb">bin</span><span class="p">:</span><span class="err">$</span><span class="n">PATH</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="install-pycharm-on-ubuntu-1204">Install pycharm on ubuntu 12.04:</h3>
+
+<ul>
+  <li>Download pycharm-2.6.2.tar.gz <a href="http://download.jetbrains.com/python/pycharm-2.6.2.tar.gz">from here</a></li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="err">$</span> <span class="n">tar</span> <span class="o">-</span><span class="n">xvzf</span> <span class="n">pycharm</span><span class="o">-</span><span class="mf">2.6</span><span class="o">.</span><span class="mf">2.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+</span><span class="line"><span class="err">$</span> <span class="n">cd</span> <span class="o">/</span><span class="n">pycharm</span><span class="o">-</span><span class="mf">2.6</span><span class="o">.</span><span class="mi">2</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span>
+</span><span class="line"><span class="err">$</span> <span class="o">./</span><span class="n">pycharm</span><span class="o">.</span><span class="n">sh</span> <span class="o">&amp;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p class="post-footer">
+                        Original link: <a href="https://sumnous.github.io/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04/">https://sumnous.github.io/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04/</a><br />&nbsp;Written by <a href="https://sumnous.github.io">sumnous</a>&nbsp;Posted at <a href="https://sumnous.github.io">https://sumnous.github.io</a></p>
+]]></content>
+  </entry>
+  
+</feed>

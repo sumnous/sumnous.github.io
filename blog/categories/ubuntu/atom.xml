@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ubuntu | Sumnous's Blog]]></title>
+  <link href="https://sumnous.github.io/blog/categories/ubuntu/atom.xml" rel="self"/>
+  <link href="https://sumnous.github.io/"/>
+  <updated>2015-07-07T13:16:12+08:00</updated>
+  <id>https://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Install PyCharm and JDK on Ubuntu 12.04]]></title>
+    <link href="https://sumnous.github.io/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04/"/>
+    <updated>2012-10-17T15:48:29+08:00</updated>
+    <id>https://sumnous.github.io/blog/2012/10/17/install-pycharm-and-jdk-on-ubuntu-12-dot-04</id>
+    <content type="html"><![CDATA[<h3 id="installing-sun-jdk-7-on-ubuntu-1204">Installing Sun JDK 7 on Ubuntu 12.04:</h3>
+
+<ul>
+  <li>
+    <p>Download the sun jdk 7 tar file <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk7u7-downloads-1836413.html">from here</a></p>
+  </li>
+  <li>
+    <p>Extract the tar file:</p>
+  </li>
+</ul>
+
+<p><code>python
+$ tar -xvzf jdk-7u4-linux-x64.tar.gz
+</code></p>
+
+<ul>
+  <li>Move extracted folder to this location:</li>
+</ul>
+
+<p><code>
+$ sudo mv jdk1.7.0_04 /usr/lib/jvm/
+</code></p>
+
+<ul>
+  <li>Install new java source in system: </li>
+</ul>
+
+<p><code>
+$ sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.7.0_04/bin/javac 1 
+$ sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.7.0_04/bin/java 1 
+$ sudo update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/jdk1.7.0_04/bin/javaws 1
+</code>
+<!--more--></p>
+
+<ul>
+  <li>Choose default java:</li>
+</ul>
+
+<p><code>
+$ sudo update-alternatives --config javac 
+$ sudo update-alternatives --config java 
+$ sudo update-alternatives --config javaws
+</code></p>
+
+<ul>
+  <li>java version test:</li>
+</ul>
+
+<p><code>
+$ java -version
+</code></p>
+
+<ul>
+  <li>Verify the symlinks all point to the new java location:</li>
+</ul>
+
+<p><code>
+$ ls -la /etc/alternatives/java*
+</code></p>
+
+<ul>
+  <li>Enable Java plugin for Mozilla Firefox (even for Chrome)</li>
+</ul>
+
+<p><code>
+#for 64-Bit jdk 
+$ sudo ln -s /usr/lib/jvm/jdk1.7.0_04/jre/lib/amd64/libnpjp2.so /usr/lib/mozilla/plugins 
+#for 32-Bit jdk 
+$ sudo ln -s /usr/lib/jvm/jdk1.7.0_04/jre/lib/i386/libnpjp2.so /usr/lib/mozilla/plugins
+</code></p>
+
+<ul>
+  <li>
+    <p>JAVA_HOME configuration:</p>
+
+    <p>Some tools require JAVA_HOME variable. You can set JAVA_HOME in Ubuntu so simple: Edit the file .bashrc under your home directory and add the following lines: (if .bashrc is hidden click in Nautilus Menu View &gt; Show Hidden Files)</p>
+  </li>
+</ul>
+
+<p><code>
+export JAVA_HOME=/path/your/jdk 
+export PATH=$JAVA_HOME/bin:$PATH
+</code></p>
+
+<h3 id="install-pycharm-on-ubuntu-1204">Install pycharm on ubuntu 12.04:</h3>
+
+<ul>
+  <li>Download pycharm-2.6.2.tar.gz <a href="http://download.jetbrains.com/python/pycharm-2.6.2.tar.gz">from here</a></li>
+</ul>
+
+<p><code>
+$ tar -xvzf pycharm-2.6.2.tar.gz 
+$ cd /pycharm-2.6.2/bin/ 
+$ ./pycharm.sh &amp;
+</code></p>
+
+]]></content>
+  </entry>
+  
+</feed>

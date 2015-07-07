@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Leetcode | Sumnous's Blog]]></title>
+  <link href="https://sumnous.github.io/blog/categories/leetcode/atom.xml" rel="self"/>
+  <link href="https://sumnous.github.io/"/>
+  <updated>2015-07-07T13:16:12+08:00</updated>
+  <id>https://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[[Leetcode] Valid Parentheses @Python]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python/"/>
+    <updated>2014-05-10T14:21:48+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/10/leetcode-valid-parentheses-at-python</id>
+    <content type="html"><![CDATA[<p><a href="http://oj.leetcode.com/problems/valid-parentheses/">Problem</a></p>
+
+<p><code>python
+class Solution:
+    # @return a boolean
+    def isValid(self, s):
+        if s == '':
+            return True
+        left = '([{'
+        right = ')]}'
+        stack = []
+        for i in s:
+            if i == '(' or i == '[' or i == '{':
+                stack.append(i)
+                continue
+            for j in xrange(3):
+                if i == right[j]:
+                    if not stack or stack[-1] != left[j]:
+                        return False
+                    else:
+                        stack.pop()
+                        continue
+        return not stack
+# test
+s = Solution()
+print s.isValid('()')
+</code></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[Leetcode] Longest Valid Parentheses @Python]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python/"/>
+    <updated>2014-05-10T14:17:58+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/10/leetcode-longest-valid-parentheses-at-python</id>
+    <content type="html"><![CDATA[<p><a href="http://oj.leetcode.com/problems/longest-valid-parentheses/">Problem</a></p>
+
+<p><code>python
+class Solution:
+    # @param s, a string
+    # @return an integer
+    def longestValidParentheses(self, s):
+        if s == '' or s == '(' or s == ')':
+            return 0
+        stack = [(-1, ')')]
+        maxLen = 0
+        for i in xrange(len(s)):
+            if s[i] == ')' and stack[-1][1] == '(':
+                stack.pop()
+                maxLen = max(maxLen, i - stack[-1][0])
+            else:
+                stack.append((i, s[i]))
+        return maxLen
+#test
+s = Solution()
+print s.longestValidParentheses("()(()")
+print s.longestValidParentheses('(()()')
+print s.longestValidParentheses(')()())')
+</code></p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[Leetcode] Edit Distance @Python]]></title>
+    <link href="https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python/"/>
+    <updated>2014-05-10T10:06:08+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/05/10/leetcode-edit-distance-at-python</id>
+    <content type="html"><![CDATA[<p><a href="http://oj.leetcode.com/problems/edit-distance/">Problem</a></p>
+
+<p><code>python
+class Solution:
+    # @return an integer
+    def minDistance(self, word1, word2):
+        len1 = len(word1)
+        len2 = len(word2)
+        dp = [[0 for j in xrange(len2+1)] for i in xrange(len1 +1)]
+        for i in xrange(len1+1):
+            dp[i][0] = i
+        for j in xrange(len2+1):
+            dp[0][j] = j
+        for i in xrange(1, len1+1):
+            for j in xrange(1, len2+1):
+                if word1[i-1] == word2[j-1]:
+                    dp[i][j] = dp[i-1][j-1]
+                else:
+                    dp[i][j] = min(dp[i-1][j-1], dp[i][j-1],dp[i-1][j]) + 1
+        return dp[len1][len2]	
+</code></p>
+
+]]></content>
+  </entry>
+  
+</feed>

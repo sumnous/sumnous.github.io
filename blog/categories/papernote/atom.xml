@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: PaperNote | Sumnous's Blog]]></title>
+  <link href="https://sumnous.github.io/blog/categories/papernote/atom.xml" rel="self"/>
+  <link href="https://sumnous.github.io/"/>
+  <updated>2015-07-07T13:16:12+08:00</updated>
+  <id>https://sumnous.github.io/</id>
+  <author>
+    <name><![CDATA[sumnous]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2013-Data Fusion_Resolving Conflicts from Multiple Sources-PaperNote]]></title>
+    <link href="https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote/"/>
+    <updated>2014-09-06T11:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2014/09/06/data_fusion_resolving_conflicts_from_multiple_sources-papernote</id>
+    <content type="html"><![CDATA[<p><a href="http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41657.pdf">paper link</a></p>
+
+<h2 id="section">问题现状背景</h2>
+
+<p>数据管理应用需要整合多个来源的数据，这些多个来源的数据有可能冲突，为了提供数据的质量，需要解决冲突以及发掘反应真实世界的values，这个过程也叫做数据融合。</p>
+
+<p>传统的方法是投票</p>
+
+<h2 id="section-1">论文的贡献（解决的问题）</h2>
+
+<p>本文提出了一种在大量有冲突的数据源中发现true values的数据融合方法，并且数据源之间可以copy。</p>
+
+<ol>
+  <li>考虑数据源之间copy的情况（但不支持两个数据源互相copy）</li>
+  <li>truth discovery准确率提高</li>
+  <li>可扩展到大数据源的情况</li>
+</ol>
+
+<h2 id="section-2">举例</h2>
+
+<p>本文用一个例子，详细的对应计算贯穿全文，便于理解。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-1.png" /></center>
+
+<h2 id="section-3">主要方法/特征</h2>
+
+<p>Intuition：</p>
+
+<ol>
+  <li>共享正确的值不一定表明copy，但如果两个源独立则共享错误值是一个低概率事件。</li>
+  <li>考虑投票的准确性（数据源的准确性用概率表示，需要鉴别数据源的独立性以及哪个源是copier）</li>
+</ol>
+
+<h3 id="source-accuracy-in-data-fusion">Source Accuracy in data fusion</h3>
+
+<p>Problem: 给定数据源，对于每一个object确定其true value</p>
+
+<p>计算一个数据源的准确性概率：</p>
+
+<p>将数据源S的accuracy记作A(S)，计算方式为源中所有值为真的平均概率，S提供一个特定错误值的概率为(1-A(S))/n。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-2.png" /></center>
+
+<p>计算一个value为真的概率：</p>
+
+<p>采用贝叶斯概率计算一个值为真的概率P(v)=Pr(v true/O的所有观察值)，通过计算先验概率Pr(O的所有观察值/v true)，Pr(O的所有观察值)</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-3.png" /></center>
+
+<p>为了简化计算，v的置信度(<em>confidence</em>)记作C(v)，数据源的准确分数记作A’(S)，则C(v)为所有数据源分数的求和，P(v)也可以用C(v)表示。</p>
+
+<h3 id="copying-relationships-in-data-fusion">Copying relationships in data fusion</h3>
+
+<p>分两种数据源：独立和有copy关系。</p>
+
+<p>两个数据源提供的值分三种情况：Ot表示S1和S2提供相同的true value；Of表示S1和S2提供相同的false value；Od表示S1和S2提供different value；这三种value集合共同构成Phi空间。</p>
+
+<p>依然采用贝叶斯概率，分别计算Pr(Phi/S1与S2独立)，Pr(Phi/S1-&gt;S2)，Pr(Phi/S2-&gt;S1)，可由此计算Pr(S1与S2独立/Phi)</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-4.png" /></center>
+
+<h3 id="independent-vote-count-of-a-value">Independent Vote Count of a Value</h3>
+
+<p>即使copier也会提供不同于原始源的值，我们会计算每个值的independent vote。首先，采用一种贪心算法去决定所有源独立性的排序，越独立的排序越靠前。然后，再计算S独立的提供v相较于其他源S0提供v的概率，I(S)。则v的confidence为，C(v) = A’(S)*I(S)对所有源的求和。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-5.png" /></center>
+
+<h3 id="iterative-algorithm---accucopy">Iterative Algorithm - ACCUCOPY</h3>
+
+<p>迭代计算：accuracy of sources, copying between sources, and confidence of values</p>
+
+<p>初始状态给每个源初始化相同的准确度，每个value相同的正确概率。1）根据前次的C(v)计算copying关系；2）更新C(v)；3）更新源的准确度。</p>
+
+<p>最多2l*n0轮收敛(l为object个数，n0为每个源的value个数)，每轮的时间复杂度为O(object的个数x源的个数的平方xlog(源的个数))</p>
+
+<h2 id="section-4">效果结论</h2>
+
+<p>http://lunadong.com/fusionDataSets.htm上AbeBooks.com各个书店的计算机类图书书单。</p>
+
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/source/images/0906-6.png" /></center>
+
+<h2 id="section-5">我的总结</h2>
+
+<p>原先的判断true value的投票算法并未考虑源之间互相抄袭的情况，本文的算法中考虑了这种情况后，准确率大大提高。</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[论文学习笔记] ICDM12-Topic-aware Social Influence Propagation Models(话题感知社会影响力传播模型)]]></title>
+    <link href="https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware+Social+Influence+Propagation-Models/"/>
+    <updated>2013-09-04T17:10:28+08:00</updated>
+    <id>https://sumnous.github.io/blog/2013/09/04/ICDM12-Topic-aware Social Influence Propagation-Models</id>
+    <content type="html"><![CDATA[<blockquote>
+  <p>Barbieri, N., Bonchi, F., &amp; Manco, G. (2012, December). Topic-aware social influence propagation models. In Data Mining (ICDM), 2012 IEEE 12th International Conference on (pp. 81-90). IEEE.</p>
+</blockquote>
+
+<p>社交网络传播模型的共同特征：</p>
+
+<ol>
+  <li>用户成为活跃用户的可能性随着他的邻居中活跃用户的数量单调增加。</li>
+  <li>影响过程遵循Progressive规则，即用户只可能从非活跃受影响变成活跃，而不可能由活跃变成非活跃。</li>
+</ol>
+
+<p>Linear Threshold Model 线性阈值模型：是以接受者为中心的模型
+Independent Cascade Model 独立级联模型：是以发射者为中心的模型</p>
+
+<p>考虑时间延迟的模型(Continuous Time Delay Model)：在传统的IC，LT基础上引入连续时间延迟，也就是CTIC，CTLT。用于话题传播行为分析。</p>
+
+<p>目标问题：确定有影响力的用户（例如病毒式营销中）</p>
+
+<p>问题：离散对待的时间和大量参数（效率，可扩展行和过度拟合（过适，是指在调适一个统计模型时，使用过多参数。））</p>
+
+<p>观察：1）用户有不同的兴趣；2）物品有不同的特征；3）用户有可能喜欢相似的物品
+研究对象：物品特征，用户兴趣，社会影响</p>
+
+<!--more-->
+
+<p>本文贡献：</p>
+
+<ol>
+  <li>TIC和TLT</li>
+  <li>Expectation Maximization (EM) 估计TIC模型的参数</li>
+  <li>AIR (Authoritativeness-Interest-Relevance) 用户权威和话题兴趣取代user-to-user influence，减少参数</li>
+  <li>Generalized Expectation Maximization (GEM) 用来学习最大似然来估计AIR模型的参数</li>
+  <li>使传统的IC模型可预测所接受的特定物品</li>
+  <li>考虑物品特征</li>
+</ol>
+
+<p>在之前的topic-wise social influence加入Viral Marketing (病毒式营销) &amp; Influence Maximization方法</p>
+
+<p>σm(S) is monotone &amp; submodular （子模函数，随着加入集合的元素越多,  F 函数值获得的受益越少(效用边际递减)。）</p>
+
+<p>Influence maximization</p>
+
+<p>TIC (Topic-aware Independent Cascade Model)
+TLT (Topic-aware Linear Threshold Model)</p>
+
+<ol>
+  <li>
+    <p>learning parameters of TIC model using Expectation-Maximization method (Complete-Data Expectation Likelihood[14], or log-likelihood maximization)</p>
+  </li>
+  <li>
+    <p>加入新物品item</p>
+  </li>
+</ol>
+
+<p>AIR propagation model
+parameters:</p>
+
+<ol>
+  <li>authoritativeness of a user in a topic</li>
+  <li>interest of a user for a topic</li>
+  <li>relevance of an item for a topic</li>
+</ol>
+
+<p>principle: general threshold model [2]
+用selection scaling factors来控制时间衰变对信息传播的影响</p>
+
+<p>Influence Maximization in AIR: </p>
+
+<ul>
+  <li>Greedy</li>
+  <li>Top-k authorities</li>
+</ul>
+
+<p>存在的问题和可以改进的地方：</p>
+
+<ol>
+  <li>这篇文章只是一个网络，不是异构网络，可以考虑构成user,item,topic三个网络的异构网络</li>
+  <li>只考虑到影响，并没有考虑到同质（personal影响，不只是结构影响，有可能是节点的属性影响传播）和环境</li>
+  <li>权威模型并不代表真的有效，容易被影响的人才能决定网络中信息的传播</li>
+  <li>网络的update，这篇文章只有item的update，并未涉及user关系的update</li>
+</ol>
+
+<p>未来工作的难点：</p>
+
+<ol>
+  <li>加入点东西使得影响的人更多影响力更大（Influence Maximization）</li>
+  <li>改进模型使得计算速度更快</li>
+</ol>
+
+<blockquote>
+  <p>重要参考文献：
+<a href="http://pdf.aminer.org/000/472/900/maximizing_the_spread_of_influence_through_a_social_network.pdf">Kempe, D., Kleinberg, J., &amp; Tardos, É. (2003, August). Maximizing the spread of influence through a social network. In Proceedings of the ninth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 137-146). ACM.</a></p>
+</blockquote>
+
+]]></content>
+  </entry>
+  
+</feed>

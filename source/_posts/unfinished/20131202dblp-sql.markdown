@@ -1,0 +1,167 @@
+---
+layout: post
+title: "DBLP数据集SQL导入"
+date: 2013-12-02 16:10:28 +0800
+comments: true
+categories: SQL
+---
+
+
+###1. 创建数据库DBLP：
+
+`show databases; `
+ 
+`create database dblp;`
+
+`use dblp;`
+
+导入数据库：
+
+`mysql -u root -p dblp <  /Users/ting/workspace/datasets/dblp.sql `
+
+**CODE: [DBLP-parser](https://github.com/sumnous/DBLP-parser)**
+
+三个表：
+
+authors: pid, author
+
+papers: pid, title, year, conference, abstract
+
+cites: pid,cid
+
+`show tables;`
+
+test：
+
+`select count(*) from papers;`     看导入论文总个数
+
+`select * from authors limit 10;`  
+
+`select * from cites limit 10;`
+
+`select * from papers limit 10;`
+
+`select pid, title, year from papers limit 10; `
+
+`select * from authors limit 100000,10;` 从100000开始10个作者  
+
+看表的结构：
+
+`desc papers;`
+
+`desc authors;`
+
+`desc cites;`
+
+查看表是否有索引：
+
+`show index from authors;`
+
+创建表中列的索引：
+
+`create index pid_index on authors(pid);`
+
+`create index pid_index on cites(pid);`
+
+`create index cid_index on cites(cid);`
+
+`create index pid_index on papers(pid);` 
+
+group：
+
+`select pid, group_concat(author) from authors group by pid limit 100;`
+
+删除pid中的”index”:
+
+尝试
+
+`select left(pid, 5) from cites limit 10;`     `select substr(pid, 1,5) from cites limit 10;`
+
+`select substr(pid, 6) from cites limit 10;`
+
+更新pid:
+
+`update cites set pid = substr(pid, 6);`
+  
+`update authors set pid = substr(pid, 6);`
+
+`update papers set pid = substr(pid, 6);`  
+   
+更改pid数据类型：
+
+`alter table authors modify pid int(32);`
+ 
+`alter table papers modify pid int(32);`
+
+`alter table cites modify pid int(32);`
+
+`alter table cites modify cid int(32);`
+      
+debug: `delete from papers where title = "null";`删除title为空得论文 3个
+ 
+###2. 创建coauthorship表：
+
+`create table coauthorship select ta.pid, ta.author as author1, tb.author as author2 from authors as ta, authors as tb where ta.pid = tb.pid and ta.author < tb.author; `
+
+`create index pid_index on coauthorship(pid);`
+
+`select pid, count(*) as count from coauthorship group by pid limit 100;`
+  
+`create index author1_index on coauthorship(author1);`
+
+`create index author2_index on coauthorship(author2);`
+
+更改author数据类型的长度：
+  
+`select max(length(author1)) from coauthorship;`
+
+`select author1, length(author1) from coauthorship order by length(author1) desc limit 100;`
+
+`select distinct author1, length(author1) from coauthorship order by length(author1) desc limit 100;`
+
+`select max(length(author)) from authors;`
+
+`alter table authors modify author varchar(100);`
+
+`alter table coauthorship modify author1 varchar(100);`   
+
+###3. 创建coauthorweight表，两个作者共同合作多少篇文章：
+
+`create table coauthorweight select author1, author2, count(*) as weight from coauthorship group by author1, author2;`
+
+test:
+
+`select * from coauthorweight order by weight desc limit 40;`
+
+`select * from coauthorweight where author1 = "Guoliang Li" order by weight desc;`
+      
+`select * from coauthorweight where author1 = "Guoliang Li" or author2 = "Guoliang LI" order by weight desc;` 
+
+`select * from authors, papers where author = "Guoliang Li" and authors.pid = papers.pid;`
+
+`select authors.author, papers.title, papers.year, papers.conference from authors, papers where author = "Guoliang Li" and authors.pid = papers.pid;`  
+
+
+###4. 创建author_count表，每个作者发表的文章数：
+
+`create table author_count select author, count(*) as number from authors group by authors;` 
+
+创建author-papercount
+
+`create index author_index on authors(author);` 
+
+`create table author_count select author, count(*) as number from authors group by author;` 
+
+test：
+
+`select * from author_count where author = "Guoliang Li";`
+ 
+`select * from author_count order by number desc limit 10;`
+
+导出txt
+
+`select * from authors limit 10 into outfile "authors.txt”;`
+
+找到文件存放位置
+
+`show variables like "%dir%";`  
