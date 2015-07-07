@@ -5,7 +5,7 @@ date: 2014-07-05 11:10:28 +0800
 comments: true
 categories: Movie
 ---
-<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p2119675128.jpg"></center>
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/images/p2119675128.jpg"></center>
 
 173分钟，却好似经历了人生的缩影，幼儿的洋洋，青少年的婷婷、莉莉、胖子，中年人的NJ，敏敏，阿弟，阿弟媳妇，阿瑞，蒋妈，云云，大田，还有NJ的老板，老年人的婆婆。
 
@@ -27,13 +27,13 @@ categories: Movie
 
 <!--more-->
 
-<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p835646285.jpg"></center>
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/images/p835646285.jpg"></center>
 
-<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p2026807998.jpg"></center>
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/images/p2026807998.jpg"></center>
 
-<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p1820240442.jpg"></center>
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/images/p1820240442.jpg"></center>
 
-<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/e8ba2ba64c8a93f9712ee9ed3ae9d4ef66f77edd/source/images/p455438296.jpg"></center>
+<center><img src="https://raw.githubusercontent.com/sumnous/sumnous.github.io/source/images/p455438296.jpg"></center>
 
 #####<center>婆婆</center>
 
